@@ -1,0 +1,66 @@
+{
+  "rock": {
+    "minColor": [ 0, 0, 0.30 ],
+    "maxColor": [ 10, 0, 0.70 ],
+    "minSpeed": 0,
+    "maxSpeed": 0,
+    "density": 255,
+    "deathChance": 0,
+    "solid": true,
+    "flaming": false,
+    "flammable": false,
+    "melting": false,
+    "meltable": false,
+    "behavior": [
+      []
+    ]
+  },
+  "sand": {
+    "minColor": [ 40, 1, 1 ],
+    "maxColor": [ 60, 1, 1 ],
+    "minSpeed": 1,
+    "maxSpeed": 2,
+    "density": 120,
+    "deathChance": 0,
+    "solid": true,
+    "flaming": false,
+    "flammable": false,
+    "melting": false,
+    "meltable": true,
+    "behavior": [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        1,
+        3
+      ]
+    ]
+  },
+  "water": {
+    "minColor": [ 220, 1, 1 ],
+    "maxColor": [ 230, 1, 1 ],
+    "minSpeed": 2,
+    "maxSpeed": 3,
+    "density": 50,
+    "deathChance": 0,
+    "solid": false,
+    "flaming": false,
+    "flammable": false,
+    "melting": false,
+    "meltable": false,
+    "behavior": [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        4,
+        6
+      ]
+    ]
+  }
+}
