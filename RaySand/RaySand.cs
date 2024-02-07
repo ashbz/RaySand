@@ -23,11 +23,13 @@ namespace RaySand
         
         const string _ELEMENT_FILEPATH = @"elements.json";
         const int _GRID_PIXEL_SIZE = 16;
-        const int _WORLD_WIDTH = 400;
+        const int _WORLD_WIDTH = 500;
         const int _WORLD_HEIGHT = 300;
+        const int _DIRTY_CHUNK_SIZE = 10;
+        static int _DIRTY_WORLD_WIDTH;
+        static int _DIRTY_WORLD_HEIGHT;
         const int _UI_WIDTH = 140;
         const int _UI_HEIGHT = 480;
-        const int _DIRTY_CHUNK_SIZE = 10;
         static int CURSOR_SIZE = 40;
         static double last_update_time = 0f;
         static double update_every = 0.016f;
@@ -41,6 +43,7 @@ namespace RaySand
         static int[,] new_world = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
         static bool[,] dirty_world = new bool[_WORLD_WIDTH, _WORLD_HEIGHT];
         static bool[,] dirty_world_chunks;
+        static bool[,] old_dirty_world_chunks;
         static int[,] world_color_map = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
 
         static ConcurrentDictionary<int, Color> COLOR_CACHE;
@@ -173,18 +176,16 @@ namespace RaySand
             new_world = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
             dirty_world = new bool[_WORLD_WIDTH, _WORLD_HEIGHT];
 
+            _DIRTY_WORLD_WIDTH = _WORLD_WIDTH / _DIRTY_CHUNK_SIZE;
+            _DIRTY_WORLD_HEIGHT = _WORLD_HEIGHT / _DIRTY_CHUNK_SIZE;
 
-            int dirtyWidth;
-            int dirtyHeight;
-            (dirtyWidth, dirtyHeight) = GetDirtyWorldIndexes(_WORLD_WIDTH, _WORLD_HEIGHT);
-
-            dirty_world_chunks = new bool[dirtyWidth, dirtyHeight];
+            dirty_world_chunks = new bool[_DIRTY_WORLD_WIDTH, _DIRTY_WORLD_HEIGHT];
             //old_world = new int[world_width, world_height];
-            for (int x = 0; x < dirtyWidth; x++)
+            for (int x = 0; x < _DIRTY_WORLD_WIDTH; x++)
             {
-                for (int y = 0; y < dirtyHeight; y++)
+                for (int y = 0; y < _DIRTY_WORLD_HEIGHT; y++)
                 {
-                    dirty_world_chunks[x, y] = true; ;
+                    dirty_world_chunks[x, y] = false;
                 }
             }
 
@@ -354,6 +355,18 @@ namespace RaySand
             {
                 last_update_time = GetTime();
 
+                old_dirty_world_chunks = dirty_world_chunks.Clone() as bool[,];
+
+                dirty_world_chunks = new bool[_DIRTY_WORLD_WIDTH, _DIRTY_WORLD_HEIGHT];
+                //old_world = new int[world_width, world_height];
+                for (int x = 0; x < _DIRTY_WORLD_WIDTH; x++)
+                {
+                    for (int y = 0; y < _DIRTY_WORLD_HEIGHT; y++)
+                    {
+                        dirty_world_chunks[x, y] = false;
+                    }
+                }
+
                 if (_PARALLEL_FLAG)
                 {
                     Parallel.For(0, _WORLD_WIDTH, (x) =>
@@ -402,7 +415,7 @@ namespace RaySand
                     if (_DEBUG_FLAG)
                     {
                         DRAW_CALLS++;
-                        DrawRectangleLinesEx(new Rectangle((int)ch.X * _GRID_PIXEL_SIZE, (int)ch.Y * _GRID_PIXEL_SIZE, (int)ch.width * _GRID_PIXEL_SIZE, (int)ch.height * _GRID_PIXEL_SIZE), 2f, RED);
+                        DrawRectangleLinesEx(new Rectangle((int)ch.X * _GRID_PIXEL_SIZE, (int)ch.Y * _GRID_PIXEL_SIZE, (int)ch.width * _GRID_PIXEL_SIZE, (int)ch.height * _GRID_PIXEL_SIZE), 2f, GREEN);
                     }
                 }
             }
@@ -440,23 +453,41 @@ namespace RaySand
 
                         if (_DEBUG_FLAG && dirty_world[x, y])
                         {
-                            DRAW_CALLS++;
-                            DrawRectangleLines(x * _GRID_PIXEL_SIZE, y * _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, RED);
+                            //DRAW_CALLS++;
+                            //DrawRectangleLines(x * _GRID_PIXEL_SIZE, y * _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, RED);
                         }
                     }
                 }
 
+                //int dirtyWidth;
+                //int dirtyHeight;
+                //(dirtyWidth, dirtyHeight) = GetDirtyWorldIndexes(_WORLD_WIDTH, _WORLD_HEIGHT);
+
+                //for (int x = 0; x < dirtyWidth; x++)
+                //{
+                //    for (int y = 0; y < dirtyHeight; y++)
+                //    {
+                //        if (dirty_world_chunks[x, y])
+                //        {
+                //            DrawRectangleLines(x * (_GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE) + (_GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE) / 2, y * _GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE + _GRID_PIXEL_SIZE / 2, _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, RED);
+                //        }
+                //    }
+                //}
+            }
+
+            if (_DEBUG_FLAG)
+            {
                 int dirtyWidth;
                 int dirtyHeight;
                 (dirtyWidth, dirtyHeight) = GetDirtyWorldIndexes(_WORLD_WIDTH, _WORLD_HEIGHT);
 
-                for (int x = 0; x < dirtyWidth; x++)
+                for (int x = 0; x < _DIRTY_WORLD_WIDTH; x++)
                 {
-                    for (int y = 0; y < dirtyHeight; y++)
+                    for (int y = 0; y < _DIRTY_WORLD_HEIGHT; y++)
                     {
                         if (dirty_world_chunks[x, y])
                         {
-                            DrawRectangleLines(x * (_GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE) + (_GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE) / 2, y * _GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE + _GRID_PIXEL_SIZE / 2, _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, RED);
+                            DrawRectangleLinesEx(new Rectangle(x * (_GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE), y * _GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE, _GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE, _GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE), 10f, RED);
                         }
                     }
                 }
@@ -536,7 +567,7 @@ namespace RaySand
             var boxCount = (_WORLD_HEIGHT * _WORLD_WIDTH) - new_world.Count(0);
             DrawText($"Count - {boxCount}", pX, 10 + 20, 10, YELLOW);
             DrawText($"Draws - {DRAW_CALLS}", pX, 10 + 30, 10, SKYBLUE);
-            if (_PARALLEL_FLAG || _PAUSE_FLAG || _FAST_DRAW_FLAG)
+            if (_PARALLEL_FLAG || _PAUSE_FLAG || _FAST_DRAW_FLAG || _DEBUG_FLAG)
             {
                 DrawText($"Flags - " + 
                     ((_PARALLEL_FLAG) ? "PARALLEL " : "") + 
@@ -596,11 +627,11 @@ namespace RaySand
 
         static (int, int) GetDirtyWorldIndexes(int x, int y)
         {
-            var tmpX = (int)Math.Ceiling(x / (float)_DIRTY_CHUNK_SIZE);
-            var tmpY = (int)Math.Ceiling(y / (float)_DIRTY_CHUNK_SIZE);
+            var tmpX = x / _DIRTY_CHUNK_SIZE;
+            var tmpY = y / _DIRTY_CHUNK_SIZE;
 
-            if (tmpX < 1) tmpX = 1;
-            if (tmpY < 1) tmpY = 1;
+            if (tmpX >= _DIRTY_WORLD_WIDTH) tmpX = _DIRTY_WORLD_WIDTH - 1;
+            if (tmpY >= _DIRTY_WORLD_HEIGHT) tmpY = _DIRTY_WORLD_HEIGHT - 1;
 
             return (tmpX, tmpY);
         }
@@ -618,15 +649,31 @@ namespace RaySand
             int dirtyY;
             (dirtyX, dirtyY) = GetDirtyWorldIndexes(x, y);
 
-            dirty_world_chunks[dirtyX - 1, dirtyY - 1] = true;
+            var actualDirtyX = dirtyX;
+            var actualDirtyY = dirtyY;
 
-            for (int i = newX1; i <= newX2; i++)
+            var offset = 1;
+            for(int tmpX = actualDirtyX - offset; tmpX <= actualDirtyX + offset; tmpX++)
             {
-                for (int j = newY1; j <= newY2; j++)
+                for (int tmpY = actualDirtyY - offset; tmpY <= actualDirtyY + offset; tmpY++)
                 {
-                    dirty_world[i, j] = true;
+                    var validX = tmpX >= 0 && tmpX < _DIRTY_WORLD_WIDTH;
+                    var validY = tmpY >= 0 && tmpY < _DIRTY_WORLD_HEIGHT;
+                    if (validX && validY)
+                    {
+                        dirty_world_chunks[tmpX, tmpY] = true;
+                    }
                 }
             }
+
+
+            //for (int i = newX1; i <= newX2; i++)
+            //{
+            //    for (int j = newY1; j <= newY2; j++)
+            //    {
+            //        dirty_world[i, j] = true;
+            //    }
+            //}
         }
 
 
@@ -678,6 +725,19 @@ namespace RaySand
         {
             var currType = my_world[x, y];
             if (currType == 0) return;
+
+            int dirtyX;
+            int dirtyY;
+            (dirtyX, dirtyY) = GetDirtyWorldIndexes(x, y);
+
+            if (old_dirty_world_chunks[dirtyX, dirtyY] == false)
+            {
+                //dirty_world_chunks[dirtyX, dirtyY] = false;
+                return;
+            }
+
+            //SetNeighbor(my_world, x, y, currType);
+
 
             if (!dirty_world[x, y]) return;
 
