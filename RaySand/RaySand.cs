@@ -39,7 +39,7 @@ namespace RaySand
         static ConcurrentDictionary<int, Element> ALL_ELEMENTS;
         static readonly Element EMPTY_ELEMENT = new() { id = 0, name = "None" };
 
-        static int[,] new_world = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
+        static Element[,] new_world = new Element[_WORLD_WIDTH, _WORLD_HEIGHT];
         static bool[,] dirty_world_chunks;
         static bool[,] old_dirty_world_chunks;
         static int[,] world_color_map = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
@@ -171,7 +171,7 @@ namespace RaySand
             world_camera.zoom = 0.1f;
 
             SetTargetFPS(60);
-            new_world = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
+            new_world = new Element[_WORLD_WIDTH, _WORLD_HEIGHT];
 
             _DIRTY_WORLD_WIDTH = _WORLD_WIDTH / _DIRTY_CHUNK_SIZE;
             _DIRTY_WORLD_HEIGHT = _WORLD_HEIGHT / _DIRTY_CHUNK_SIZE;
@@ -193,6 +193,7 @@ namespace RaySand
                 for (int y = _WORLD_HEIGHT - 1; y >= 0; y--)
                 {
                     world_color_map[x, y] = GetRandomValue(1, 3);
+                    new_world[x, y] = EMPTY_ELEMENT;
                 }
             }
 
@@ -316,11 +317,11 @@ namespace RaySand
                         var actualBitWorldPos = GridToBitWorld(item);
                         if (IsWorldCoordinate(actualBitWorldPos))
                         {
-                            if (new_world[(int)actualBitWorldPos.X, (int)actualBitWorldPos.Y] != 0) continue;
+                            if (new_world[(int)actualBitWorldPos.X, (int)actualBitWorldPos.Y].id != 0) continue;
 
                             if (current_element.IsFrozen() || (actualBitWorldPos.X + actualBitWorldPos.Y) % 2 == 0)
                             {
-                                SetNeighbor(new_world, actualBitWorldPos.X, actualBitWorldPos.Y, current_element.id);
+                                SetNeighbor(new_world, actualBitWorldPos.X, actualBitWorldPos.Y, current_element);
                             }
                         }
                     }
@@ -332,7 +333,7 @@ namespace RaySand
                         var actualBitWorldPos = GridToBitWorld(item);
                         if (IsWorldCoordinate(actualBitWorldPos))
                         {
-                            SetNeighbor(new_world, actualBitWorldPos.X, actualBitWorldPos.Y, 0);
+                            SetNeighbor(new_world, actualBitWorldPos.X, actualBitWorldPos.Y, EMPTY_ELEMENT);
                         }
                     }
                 }
@@ -419,8 +420,8 @@ namespace RaySand
                 foreach (var ch in RENDER_CHUNKS)
                 {
                     var currType = new_world[(int)ch.X, (int)ch.Y];
-                    
-                    var mat = GetElementById(currType);
+
+                    var mat = currType;
                     Color clr = ColorFromHSV(mat.minColor[0] + (mat.maxColor[0] - mat.minColor[0])/2, mat.minColor[1] + (mat.maxColor[1] - mat.minColor[1]) / 2, mat.minColor[2] + (mat.maxColor[2] - mat.minColor[2]) / 2);
                     
                     DRAW_CALLS++;
@@ -441,9 +442,9 @@ namespace RaySand
                     {
                         var currElementType = new_world[x, y];
 
-                        if (currElementType == 0) continue;
+                        if (currElementType.id == 0) continue;
 
-                        var mat = GetElementById(currElementType);
+                        var mat = currElementType;
 
                         var tmpH = mat.maxColor[0] - mat.minColor[0];
                         var tmpS = mat.maxColor[1] - mat.minColor[1];
@@ -571,7 +572,7 @@ namespace RaySand
             pX = 10;
 
             DrawFPS(pX, 10);
-            var boxCount = (_WORLD_HEIGHT * _WORLD_WIDTH) - new_world.Count(0);
+            var boxCount = (_WORLD_HEIGHT * _WORLD_WIDTH);// - new_world.(0);
             DrawText($"Count - {boxCount}", pX, 10 + 20, 10, YELLOW);
             DrawText($"Draws - {DRAW_CALLS}", pX, 10 + 30, 10, SKYBLUE);
             if (_PARALLEL_FLAG || _PAUSE_FLAG || _FAST_DRAW_FLAG || _DEBUG_FLAG)
@@ -643,7 +644,7 @@ namespace RaySand
             return (tmpX, tmpY);
         }
 
-        public static void SetNeighbor(int[,] my_world, int x, int y, int elementType)
+        public static void SetNeighbor(Element[,] my_world, int x, int y, Element elementType)
         {
             my_world[x, y] = elementType;
 
@@ -729,20 +730,20 @@ namespace RaySand
             return (offsetX, offsetY);
         }
 
-        static void SimulateChunk(int[,] my_world, int chunkX, int chunkY)
-        {
-            Parallel.For(chunkX, _DIRTY_CHUNK_SIZE, (x) =>
-            {
-                for (int y = chunkY; y < chunkY + _DIRTY_CHUNK_SIZE;y++)
-                {
-                    SimulateElement(my_world, x, y);
-                }
-            });
-        }
-        static void SimulateElement(int[,] my_world, int x, int y, int? repeats = null)
+        //static void SimulateChunk(Element[,] my_world, int chunkX, int chunkY)
+        //{
+        //    Parallel.For(chunkX, _DIRTY_CHUNK_SIZE, (x) =>
+        //    {
+        //        for (int y = chunkY; y < chunkY + _DIRTY_CHUNK_SIZE;y++)
+        //        {
+        //            SimulateElement(my_world, x, y);
+        //        }
+        //    });
+        //}
+        static void SimulateElement(Element[,] my_world, int x, int y, int? repeats = null)
         {
             var currType = my_world[x, y];
-            if (currType == 0) return;
+            if (currType.id == 0) return;
 
             int dirtyX;
             int dirtyY;
@@ -756,7 +757,7 @@ namespace RaySand
 
             //SetNeighbor(my_world, x, y, currType);
 
-            var currElement = GetElementById(currType);
+            var currElement = currType;
             var wasElementGeneratorBefore = false;
             var generatorFrequency = 1;
             var generatorType = -1;
@@ -800,7 +801,7 @@ namespace RaySand
                     continue;
                 }
 
-                var destMat = GetElementById(my_world[destCoordX, destCoordY]);
+                var destMat = my_world[destCoordX, destCoordY];
                 if (destMat.id == currElement.id)
                 {
                     // you shouldn't be able to move
@@ -809,15 +810,15 @@ namespace RaySand
 
                 if (currElement.flaming && destMat.flammable)
                 {
-                    SetNeighbor(my_world, x, y, 0);
-                    SetNeighbor(my_world, destCoordX, destCoordY, 4);
+                    SetNeighbor(my_world, x, y, EMPTY_ELEMENT);
+                    SetNeighbor(my_world, destCoordX, destCoordY, GetElementById(4));
                     break;
                 }
 
                 if (currElement.melting && destMat.meltable)
                 {
-                    SetNeighbor(my_world, x, y, 0);
-                    SetNeighbor(my_world, destCoordX, destCoordY, 5);
+                    SetNeighbor(my_world, x, y, EMPTY_ELEMENT);
+                    SetNeighbor(my_world, destCoordX, destCoordY, GetElementById(5));
                     break;
                 }
 
@@ -825,7 +826,7 @@ namespace RaySand
                 {
                     if (GetRandomValue(1, currElement.deathChance) == 1)
                     {
-                        SetNeighbor(my_world, x, y, 0);
+                        SetNeighbor(my_world, x, y, EMPTY_ELEMENT);
                         break;
                     }
                 }
@@ -838,16 +839,16 @@ namespace RaySand
 
                     if (wasElementGeneratorBefore)
                     {
-                        SetNeighbor(my_world, x, y, generatorType);
+                        SetNeighbor(my_world, x, y, GetElementById(generatorType));
                         if (GetRandomValue(1, generatorFrequency) % 2 == 0)
                         {
-                            SetNeighbor(my_world, destCoordX, destCoordY, currElement.id);
+                            SetNeighbor(my_world, destCoordX, destCoordY, currElement);
                         }
                     }
                     else
                     {
                         SetNeighbor(my_world, x, y, tmp);
-                        SetNeighbor(my_world, destCoordX, destCoordY, currElement.id);
+                        SetNeighbor(my_world, destCoordX, destCoordY, currElement);
                     }
 
                     break;
@@ -894,16 +895,16 @@ namespace RaySand
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (world[x, y] == 0) continue;
+                    if (world[x, y].id == 0) continue;
 
                     if (!visited[x, y])
                     {
-                        int color = world[x, y];
+                        int color = world[x, y].id;
                         int rectWidth = 1;
                         int rectHeight = 1;
 
                         // expand horizontally
-                        while (x + rectWidth < width && world[x + rectWidth, y] == color && !visited[x + rectWidth, y])
+                        while (x + rectWidth < width && world[x + rectWidth, y].id == color && !visited[x + rectWidth, y])
                         {
                             rectWidth++;
                         }
@@ -914,7 +915,7 @@ namespace RaySand
                             bool canExpand = true;
                             for (int i = x; i < x + rectWidth; i++)
                             {
-                                if (visited[i, y + rectHeight] || world[i, y + rectHeight] != color)
+                                if (visited[i, y + rectHeight] || world[i, y + rectHeight].id != color)
                                 {
                                     canExpand = false;
                                     break;
