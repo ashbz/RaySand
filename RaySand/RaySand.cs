@@ -31,8 +31,7 @@ namespace RaySand
         const int _UI_WIDTH = 140;
         const int _UI_HEIGHT = 480;
         static int CURSOR_SIZE = 40;
-        static double last_update_time = 0f;
-        static double update_every = 0.016f;
+        static int speed_multiplier = 3;
         static Camera2D world_camera;
         static FileSystemWatcher file_watcher;                              // monitor changes to elements.json file to live update elements
         static DateTime element_file_last_read_dt = DateTime.MinValue;      // last time elements.json was read
@@ -41,13 +40,13 @@ namespace RaySand
         static readonly Element EMPTY_ELEMENT = new() { id = 0, name = "None" };
 
         static int[,] new_world = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
-        static bool[,] dirty_world = new bool[_WORLD_WIDTH, _WORLD_HEIGHT];
         static bool[,] dirty_world_chunks;
         static bool[,] old_dirty_world_chunks;
         static int[,] world_color_map = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
 
         static ConcurrentDictionary<int, Color> COLOR_CACHE;
         static Dictionary<int, Tuple<Rectangle, Material>> GUI_MATERIALS = new();
+        static RenderTexture2D target;
 
         public static Element GetElementById(int id)
         {
@@ -132,7 +131,6 @@ namespace RaySand
         }
 
 
-
         static void SetupFilewatch()
         {
             try
@@ -174,13 +172,11 @@ namespace RaySand
 
             SetTargetFPS(60);
             new_world = new int[_WORLD_WIDTH, _WORLD_HEIGHT];
-            dirty_world = new bool[_WORLD_WIDTH, _WORLD_HEIGHT];
 
             _DIRTY_WORLD_WIDTH = _WORLD_WIDTH / _DIRTY_CHUNK_SIZE;
             _DIRTY_WORLD_HEIGHT = _WORLD_HEIGHT / _DIRTY_CHUNK_SIZE;
 
             dirty_world_chunks = new bool[_DIRTY_WORLD_WIDTH, _DIRTY_WORLD_HEIGHT];
-            //old_world = new int[world_width, world_height];
             for (int x = 0; x < _DIRTY_WORLD_WIDTH; x++)
             {
                 for (int y = 0; y < _DIRTY_WORLD_HEIGHT; y++)
@@ -197,7 +193,6 @@ namespace RaySand
                 for (int y = _WORLD_HEIGHT - 1; y >= 0; y--)
                 {
                     world_color_map[x, y] = GetRandomValue(1, 3);
-                    dirty_world[x, y] = true;
                 }
             }
 
@@ -348,47 +343,66 @@ namespace RaySand
                 ShowCursor();
             }
 
-
-            bool shouldSimulate = !_PAUSE_FLAG && GetTime() - last_update_time > update_every;
-
+            //var currGetTime = GetTime();
+            bool shouldSimulate = !_PAUSE_FLAG;// && currGetTime - last_update_time > update_every;
             if (shouldSimulate)
             {
-                last_update_time = GetTime();
-
                 old_dirty_world_chunks = dirty_world_chunks.Clone() as bool[,];
-
-                dirty_world_chunks = new bool[_DIRTY_WORLD_WIDTH, _DIRTY_WORLD_HEIGHT];
-                //old_world = new int[world_width, world_height];
-                for (int x = 0; x < _DIRTY_WORLD_WIDTH; x++)
+                for (int i = 0; i < speed_multiplier; i++)
                 {
-                    for (int y = 0; y < _DIRTY_WORLD_HEIGHT; y++)
+                    dirty_world_chunks = new bool[_DIRTY_WORLD_WIDTH, _DIRTY_WORLD_HEIGHT];
+                    for (int x = 0; x < _DIRTY_WORLD_WIDTH; x++)
                     {
-                        dirty_world_chunks[x, y] = false;
-                    }
-                }
-
-                if (_PARALLEL_FLAG)
-                {
-                    Parallel.For(0, _WORLD_WIDTH, (x) =>
-                    {
-                        for (int y = _WORLD_HEIGHT - 1; y >= 0; y--)
+                        for (int y = 0; y < _DIRTY_WORLD_HEIGHT; y++)
                         {
-                            SimulateElement(new_world, x, y);
-                        }
-                    });
-                }
-                else
-                {
-                    for (int x = 0; x < _WORLD_WIDTH; x++)
-                    {
-                        for (int y = _WORLD_HEIGHT - 1; y >= 0; y--)
-                        {
-                            SimulateElement(new_world, x, y);
+                            dirty_world_chunks[x, y] = false;
                         }
                     }
+
+                    if (_PARALLEL_FLAG)
+                    {
+                        Parallel.For(0, _WORLD_WIDTH, (x) =>
+                        {
+                            for (int y = _WORLD_HEIGHT - 1; y >= 0; y--)
+                            {
+                                SimulateElement(new_world, x, y);
+                            }
+                        });
+
+                        //Parallel.For(0, _DIRTY_WORLD_WIDTH, (x) =>
+                        //{
+                        //    for (int y = _DIRTY_WORLD_HEIGHT - 1; y >= 0; y--)
+                        //    {
+                        //        //if (!old_dirty_world_chunks[x, y]) continue;
+
+                        //        SimulateChunk(new_world, x, y);
+                        //    }
+                        //});
+                    }
+                    else
+                    {
+                        for (int x = 0; x < _WORLD_WIDTH; x++)
+                        {
+                            for (int y = _WORLD_HEIGHT - 1; y >= 0; y--)
+                            {
+                                SimulateElement(new_world, x, y);
+                            }
+                        }
+                    }
                 }
+                
             }
-            BeginDrawing();
+            else
+            {
+                //Console.WriteLine("DO NOT UPDATE");
+            }
+
+            if (GetRenderWidth() != target.texture.width || GetRenderHeight() != target.texture.height)
+            {
+                target = LoadRenderTexture(GetRenderWidth(), GetRenderHeight());
+            }
+
+            BeginTextureMode(target);
             int DRAW_CALLS = 0;
 
             DrawRectangleGradientEx(new Rectangle(0, 0, GetRenderWidth(), GetRenderHeight()), DARKBLUE, DARKGRAY, DARKBLUE, DARKGRAY);
@@ -450,29 +464,8 @@ namespace RaySand
 
                         DRAW_CALLS++;
                         DrawRectangle(x * _GRID_PIXEL_SIZE, y * _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, clr);
-
-                        if (_DEBUG_FLAG && dirty_world[x, y])
-                        {
-                            //DRAW_CALLS++;
-                            //DrawRectangleLines(x * _GRID_PIXEL_SIZE, y * _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, RED);
-                        }
                     }
                 }
-
-                //int dirtyWidth;
-                //int dirtyHeight;
-                //(dirtyWidth, dirtyHeight) = GetDirtyWorldIndexes(_WORLD_WIDTH, _WORLD_HEIGHT);
-
-                //for (int x = 0; x < dirtyWidth; x++)
-                //{
-                //    for (int y = 0; y < dirtyHeight; y++)
-                //    {
-                //        if (dirty_world_chunks[x, y])
-                //        {
-                //            DrawRectangleLines(x * (_GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE) + (_GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE) / 2, y * _GRID_PIXEL_SIZE * _DIRTY_CHUNK_SIZE + _GRID_PIXEL_SIZE / 2, _GRID_PIXEL_SIZE, _GRID_PIXEL_SIZE, RED);
-                //        }
-                //    }
-                //}
             }
 
             if (_DEBUG_FLAG)
@@ -512,12 +505,23 @@ namespace RaySand
                     clrBorders = GetColorFromCache(230, 41, 55, 190);
                 }
 
+
+
                 DrawCircle(centerX, centerY, radius, clrInsides);
                 DrawRing(new Vector2(centerX, centerY), radius - radius * 0.05f, radius, 0, 360f, 36, clrBorders);
+
+                radius = radius - radius / 2;
+                DrawLineEx(new Vector2(centerX, centerY + radius), new Vector2(centerX, centerY - radius), CURSOR_SIZE, clrBorders);
+                DrawLineEx(new Vector2(centerX - radius, centerY), new Vector2(centerX + radius, centerY ), CURSOR_SIZE, clrBorders);
             }
 
 
             EndMode2D();
+            EndTextureMode();
+            
+            
+            BeginDrawing();
+            DrawTextureRec(target.texture, new Rectangle(0, 0, (float)target.texture.width, (float)-target.texture.height), new Vector2(0, 0), WHITE);
 
             // ===================================
 
@@ -556,11 +560,14 @@ namespace RaySand
 
                 currY += 22;
             }
+            //GuiLabelButton(new Rectangle(pX + 0, 430, 12, 12), "0.5x");
+            //GuiLabelButton(new Rectangle(pX + 30, 430, 12, 12), "1x");
+            //GuiLabelButton(new Rectangle(pX + 60, 430, 12, 12), "2x");
+            double tmpSpeed = GuiSlider(new Rectangle(pX+20, 430, ctrlWidth-20, 20), "SPEED", speed_multiplier.ToString() + "x", speed_multiplier, 1, 6);
+            speed_multiplier = (int)tmpSpeed;
+            //update_every = 0.016f * (1/speed_multiplier);
 
-            var mSize = GuiSlider(new Rectangle(pX, 410, ctrlWidth, 20), "Size", CURSOR_SIZE.ToString(), (float)CURSOR_SIZE, 4f, 120f);
-            CURSOR_SIZE = (int)mSize - (int)mSize % 4;
-            update_every = GuiSlider(new Rectangle(pX, 430, ctrlWidth, 20), "SPD", "MIN", (float)update_every, 0.016f, 0.16f);
-
+            
             pX = 10;
 
             DrawFPS(pX, 10);
@@ -639,11 +646,6 @@ namespace RaySand
         public static void SetNeighbor(int[,] my_world, int x, int y, int elementType)
         {
             my_world[x, y] = elementType;
-            var range = 4;
-            var newX1 = Math.Max(x - range, 0);
-            var newX2 = Math.Min(x + range, _WORLD_WIDTH - 1);
-            var newY1 = Math.Max(y - range, 0);
-            var newY2 = Math.Min(y + range, _WORLD_HEIGHT - 1);
 
             int dirtyX;
             int dirtyY;
@@ -666,6 +668,12 @@ namespace RaySand
                 }
             }
 
+
+            //var range = 1;
+            //var newX1 = Math.Max(x - range, 0);
+            //var newX2 = Math.Min(x + range, _WORLD_WIDTH - 1);
+            //var newY1 = Math.Max(y - range, 0);
+            //var newY2 = Math.Min(y + range, _WORLD_HEIGHT - 1);
 
             //for (int i = newX1; i <= newX2; i++)
             //{
@@ -721,6 +729,16 @@ namespace RaySand
             return (offsetX, offsetY);
         }
 
+        static void SimulateChunk(int[,] my_world, int chunkX, int chunkY)
+        {
+            Parallel.For(chunkX, _DIRTY_CHUNK_SIZE, (x) =>
+            {
+                for (int y = chunkY; y < chunkY + _DIRTY_CHUNK_SIZE;y++)
+                {
+                    SimulateElement(my_world, x, y);
+                }
+            });
+        }
         static void SimulateElement(int[,] my_world, int x, int y, int? repeats = null)
         {
             var currType = my_world[x, y];
@@ -737,9 +755,6 @@ namespace RaySand
             }
 
             //SetNeighbor(my_world, x, y, currType);
-
-
-            if (!dirty_world[x, y]) return;
 
             var currElement = GetElementById(currType);
             var wasElementGeneratorBefore = false;
