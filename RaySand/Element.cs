@@ -14,8 +14,9 @@ namespace RaySand
         }
         public int id { get; set; }
         public string name { get; set; }
-        public float[] minColor { get; set; }
-        public float[] maxColor { get; set; }
+        public float correctionFactor { get; set; }
+
+        public int[] color { get; set; }
         public int minSpeed { get; set; }
         public string generatesMaterial { get; set; }
         public int[] generatedMaterialIds { get; set; }
@@ -43,6 +44,11 @@ namespace RaySand
         public bool IsGenerator()
         {
             return generatorFrequency > 0 && !string.IsNullOrEmpty(generatesMaterial);
+        }
+
+        public Element SoftClone()
+        {
+            return (Element)this.MemberwiseClone();
         }
     }
 }
