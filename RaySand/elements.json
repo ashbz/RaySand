@@ -1,47 +1,154 @@
 {
-  "rock": {
-    "color": [ 64, 64, 64 ],
-    "minSpeed": 0,
-    "maxSpeed": 0,
-    "density": 255,
-    "deathChance": 0,
-    "solid": true,
-    "flaming": false,
-    "flammable": false,
-    "melting": false,
-    "meltable": false,
+  "stone": {
+    "color": [ 110, 110, 110 ],
+    "minSpeed": 0, "maxSpeed": 0,
+    "density": 255, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": {},
     "behavior": [ [] ]
   },
   "sand": {
-    "color": [ 255, 153, 51 ],
-    "minSpeed": 1,
-    "maxSpeed": 2,
-    "density": 120,
-    "deathChance": 0,
-    "solid": true,
-    "flaming": false,
-    "flammable": false,
-    "melting": false,
-    "meltable": true,
-    "behavior": [
-      [ 2 ],
-      [ 1, 3 ]
-    ]
+    "color": [ 240, 180, 80 ],
+    "minSpeed": 2, "maxSpeed": 5,
+    "density": 120, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": false, "melting": false, "meltable": true,
+    "transformations": { "lava": "glass" },
+    "behavior": [ [ 2 ], [ 1, 3 ] ]
+  },
+  "glass": {
+    "color": [ 180, 220, 255 ],
+    "minSpeed": 0, "maxSpeed": 0,
+    "density": 150, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": {},
+    "behavior": [ [] ]
   },
   "water": {
-    "color": [ 0, 128, 255 ],
-    "minSpeed": 2,
-    "maxSpeed": 3,
-    "density": 50,
-    "deathChance": 0,
-    "solid": false,
-    "flaming": false,
-    "flammable": false,
-    "melting": false,
-    "meltable": false,
-    "behavior": [
-      [ 1, 2, 3 ],
-      [ 4, 6 ]
-    ]
+    "color": [ 30, 120, 255 ],
+    "minSpeed": 3, "maxSpeed": 6,
+    "density": 50, "viscosity": 1, "deathChance": 0, "deathElement": "",
+    "solid": false, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": { "lava": "obsidian", "fire": "steam", "burning_wood": "wood" },
+    "behavior": [ [] ]
+  },
+  "ice": {
+    "color": [ 200, 230, 255 ],
+    "minSpeed": 0, "maxSpeed": 0,
+    "density": 80, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": false, "melting": false, "meltable": true,
+    "transformations": { "fire": "water", "lava": "water", "burning_wood": "water" },
+    "behavior": [ [] ]
+  },
+  "lava": {
+    "color": [ 255, 60, 0 ],
+    "minSpeed": 1, "maxSpeed": 3,
+    "density": 150, "viscosity": 7, "deathChance": 0, "deathElement": "",
+    "solid": false, "flaming": true, "flammable": false, "melting": true, "meltable": false,
+    "transformations": { "water": "obsidian", "ice": "obsidian" },
+    "behavior": [ [] ]
+  },
+  "obsidian": {
+    "color": [ 50, 20, 80 ],
+    "minSpeed": 0, "maxSpeed": 0,
+    "density": 220, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": {},
+    "behavior": [ [] ]
+  },
+  "fire": {
+    "color": [ 255, 100, 0 ],
+    "minSpeed": 2, "maxSpeed": 4,
+    "density": 5, "viscosity": 0, "deathChance": 40, "deathElement": "",
+    "solid": false, "flaming": true, "flammable": false, "melting": false, "meltable": false,
+    "transformations": { "water": "steam", "ice": "water" },
+    "behavior": [ [] ]
+  },
+  "smoke": {
+    "color": [ 100, 100, 100 ],
+    "minSpeed": 1, "maxSpeed": 3,
+    "density": 8, "viscosity": 0, "deathChance": 12, "deathElement": "",
+    "solid": false, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": {},
+    "behavior": [ [] ]
+  },
+  "steam": {
+    "color": [ 200, 210, 230 ],
+    "minSpeed": 2, "maxSpeed": 5,
+    "density": 3, "viscosity": 0, "deathChance": 20, "deathElement": "",
+    "solid": false, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": {},
+    "behavior": [ [] ]
+  },
+  "wood": {
+    "color": [ 100, 60, 20 ],
+    "minSpeed": 0, "maxSpeed": 0,
+    "density": 80, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": true, "melting": false, "meltable": true,
+    "transformations": { "fire": "burning_wood", "lava": "burning_wood", "burning_wood": "burning_wood" },
+    "behavior": [ [] ]
+  },
+  "burning_wood": {
+    "color": [ 200, 70, 10 ],
+    "minSpeed": 0, "maxSpeed": 0,
+    "density": 75, "viscosity": 0, "deathChance": 8, "deathElement": "ash",
+    "solid": true, "flaming": true, "flammable": false, "melting": false, "meltable": false,
+    "transformations": { "water": "wood", "ice": "wood" },
+    "behavior": [ [] ]
+  },
+  "ash": {
+    "color": [ 70, 70, 70 ],
+    "minSpeed": 1, "maxSpeed": 2,
+    "density": 25, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": {},
+    "behavior": [ [ 2 ], [ 1, 3 ] ]
+  },
+  "oil": {
+    "color": [ 100, 65, 10 ],
+    "minSpeed": 1, "maxSpeed": 3,
+    "density": 35, "viscosity": 3, "deathChance": 0, "deathElement": "",
+    "solid": false, "flaming": false, "flammable": true, "melting": false, "meltable": false,
+    "transformations": { "fire": "fire", "lava": "fire", "burning_wood": "fire" },
+    "behavior": [ [] ]
+  },
+  "gunpowder": {
+    "color": [ 55, 55, 55 ],
+    "minSpeed": 1, "maxSpeed": 3,
+    "density": 90, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": true, "melting": false, "meltable": false,
+    "transformations": { "fire": "explosion", "lava": "explosion", "burning_wood": "explosion", "explosion": "explosion" },
+    "behavior": [ [ 2 ], [ 1, 3 ] ]
+  },
+  "tnt": {
+    "color": [ 210, 20, 20 ],
+    "minSpeed": 0, "maxSpeed": 0,
+    "density": 110, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": true, "melting": false, "meltable": false,
+    "transformations": { "fire": "explosion", "lava": "explosion", "burning_wood": "explosion", "explosion": "explosion" },
+    "behavior": [ [] ]
+  },
+  "explosion": {
+    "color": [ 255, 230, 80 ],
+    "minSpeed": 4, "maxSpeed": 8,
+    "density": 2, "viscosity": 0, "deathChance": 200, "deathElement": "",
+    "solid": false, "flaming": true, "flammable": false, "melting": true, "meltable": false,
+    "transformations": {},
+    "behavior": [ [] ]
+  },
+  "acid": {
+    "color": [ 80, 255, 30 ],
+    "minSpeed": 2, "maxSpeed": 4,
+    "density": 45, "viscosity": 2, "deathChance": 0, "deathElement": "",
+    "solid": false, "flaming": false, "flammable": false, "melting": true, "meltable": false,
+    "transformations": {},
+    "behavior": [ [] ]
+  },
+  "salt": {
+    "color": [ 240, 240, 240 ],
+    "minSpeed": 1, "maxSpeed": 2,
+    "density": 100, "viscosity": 0, "deathChance": 0, "deathElement": "",
+    "solid": true, "flaming": false, "flammable": false, "melting": false, "meltable": false,
+    "transformations": { "water": "", "acid": "" },
+    "behavior": [ [ 2 ], [ 1, 3 ] ]
   }
 }

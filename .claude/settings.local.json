@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\\\Users\\\\ashot\\\\source\\\\repos\\\\RaySand\" && dotnet build RaySand/RaySand.csproj 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\ashot\\\\source\\\\repos\\\\RaySand\" && dotnet build RaySand/RaySand.csproj 2>&1 | tail -5)",
+      "Bash(cd \"C:\\\\Users\\\\ashot\\\\source\\\\repos\\\\RaySand\" && dotnet build RaySand/RaySand.csproj 2>&1 | grep -E \"error|Error|warning CS\" | grep -v \"NETSDK\\\\|CS8618\\\\|CS8602\")",
+      "Bash(cd \"C:\\\\Users\\\\ashot\\\\source\\\\repos\\\\RaySand\" && dotnet build RaySand/RaySand.csproj 2>&1 | grep -E \"^.*error|Error\\\\\\(s\\\\\\)|Warning\\\\\\(s\\\\\\)\" | tail -5)"
+    ]
+  }
+}

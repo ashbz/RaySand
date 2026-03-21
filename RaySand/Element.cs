@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,7 @@ namespace RaySand
         public Element()
         {
             behavior = new List<int[]>();
+            transformations = new Dictionary<string, string>();
         }
         public int id { get; set; }
         public string name { get; set; }
@@ -23,12 +24,15 @@ namespace RaySand
         public int generatorFrequency { get; set; }
         public int maxSpeed { get; set; }
         public int density { get; set; }
+        public int viscosity { get; set; }  // Higher values mean more viscous/thick liquid
         public int deathChance { get; set; }
+        public string deathElement { get; set; }    // element this becomes when it dies (empty = disappear)
         public bool solid { get; set; }
         public bool flaming { get; set; }
         public bool flammable { get; set; }
         public bool melting { get; set; }
         public bool meltable { get; set; }
+        public Dictionary<string, string> transformations { get; set; }  // Maps element name to result element name
         public List<int[]> behavior { get; set; }
 
         public int GetRandomSpeed()
