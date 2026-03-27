@@ -48,6 +48,7 @@ unsafe class MipsCpu
     readonly PsxBus _bus;
     public readonly PsxGte Gte = new();
     bool _dontIsolateCache;
+    static readonly int ProfGte = Profiler.Register("GTE");
 
     public MipsCpu(PsxBus bus) => _bus = bus;
 
@@ -381,7 +382,7 @@ unsafe class MipsCpu
 
     void COP2op(uint instr, uint rs, uint rt, uint rd)
     {
-        if ((instr & 0x2000000) != 0) { Gte.Execute(instr); return; }
+        if ((instr & 0x2000000) != 0) { Profiler.Begin(ProfGte); Gte.Execute(instr); Profiler.End(ProfGte); return; }
         switch (rs)
         {
             case 0x00: DelayedLoad(rt, Gte.LoadData(rd)); break;  // MFC2

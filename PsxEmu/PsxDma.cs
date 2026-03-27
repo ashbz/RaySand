@@ -38,14 +38,30 @@ class PsxDma
     readonly PsxBus _bus;
     readonly PsxGpu _gpu;
     readonly PsxCdRom _cdrom;
+    readonly PsxSpu _spu;
     public long GpuDmaWords;
 
-    public PsxDma(PsxBus bus, PsxGpu gpu, PsxCdRom cdrom)
+    static readonly int ProfDmaGpu = Profiler.Register("Dma.GPU");
+    static readonly int ProfDmaCd  = Profiler.Register("Dma.CDROM");
+    static readonly int ProfDmaSpu = Profiler.Register("Dma.SPU");
+    static readonly int ProfDmaOtc = Profiler.Register("Dma.OTC");
+
+    public PsxDma(PsxBus bus, PsxGpu gpu, PsxCdRom cdrom, PsxSpu spu)
     {
         _bus = bus;
         _gpu = gpu;
         _cdrom = cdrom;
+        _spu = spu;
         DPCR = 0x0765_4321;
+    }
+
+    public void Reset()
+    {
+        for (int i = 0; i < 7; i++)
+            _ch[i] = default;
+        DPCR = 0x0765_4321;
+        _dicr = 0;
+        GpuDmaWords = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,9 +98,10 @@ class PsxDma
 
     void Run(int ch)
     {
-        if (ch == 6) { RunOtc(ch); DmaComplete(ch); return; }
-        if (ch == 2) { RunGpu(ch); DmaComplete(ch); return; }
-        if (ch == 3) { RunCdRom(ch); DmaComplete(ch); return; }
+        if (ch == 6) { Profiler.Begin(ProfDmaOtc); RunOtc(ch); Profiler.End(ProfDmaOtc); DmaComplete(ch); return; }
+        if (ch == 2) { Profiler.Begin(ProfDmaGpu); RunGpu(ch); Profiler.End(ProfDmaGpu); DmaComplete(ch); return; }
+        if (ch == 3) { Profiler.Begin(ProfDmaCd); RunCdRom(ch); Profiler.End(ProfDmaCd); DmaComplete(ch); return; }
+        if (ch == 4) { Profiler.Begin(ProfDmaSpu); RunSpu(ch); Profiler.End(ProfDmaSpu); DmaComplete(ch); return; }
         _ch[ch].Ctrl &= ~0x0100_0000u;
         DmaComplete(ch);
     }
@@ -179,6 +196,37 @@ class PsxDma
 
             for (uint i = 0; i < total; i++, addr = (uint)(addr + step))
                 _gpu.WriteGP0(_bus.DmaLoadWord(addr & 0x001F_FFFC));
+        }
+
+        _ch[ch].Ctrl &= ~0x0100_0000u;
+    }
+
+    void RunSpu(int ch)
+    {
+        uint addr = _ch[ch].Base & 0x001F_FFFC;
+        uint words = _ch[ch].Block & 0xFFFF;
+        uint blocks = (_ch[ch].Block >> 16) & 0xFFFF;
+        uint total = blocks > 0 ? words * blocks : words;
+        bool toDevice = (_ch[ch].Ctrl & 1) == 0; // bit 0: 0=to device (RAM→SPU), 1=from device (SPU→RAM)
+
+        if (toDevice)
+        {
+            var buf = new uint[total];
+            for (uint i = 0; i < total; i++)
+            {
+                buf[i] = _bus.DmaLoadWord(addr);
+                addr = (addr + 4) & 0x001F_FFFC;
+            }
+            _spu.DmaWrite(buf);
+        }
+        else
+        {
+            var data = _spu.DmaRead((int)total);
+            for (int i = 0; i < data.Length; i++)
+            {
+                _bus.DmaStoreWord(addr, data[i]);
+                addr = (addr + 4) & 0x001F_FFFC;
+            }
         }
 
         _ch[ch].Ctrl &= ~0x0100_0000u;

@@ -1,27 +1,20 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using RlColor = Raylib_CsLo.Color;
 
 namespace PsxEmu;
 
 /// <summary>
-/// PSX GPU – software rasterizer into VRAM.
-/// After the DMA fix, a typical frame processes only ~100-200 draw commands.
-/// Software rendering is plenty fast for this workload.
+/// PSX GPU — command parser and state machine.
+/// Delegates all actual rendering to a pluggable <see cref="PsxRendererBase"/> backend.
 /// </summary>
 class PsxGpu
 {
-    public readonly ushort[] Vram = new ushort[1024 * 512];
+    public PsxRendererBase Renderer;
 
     // Display registers (GP1)
     public int DispStartX, DispStartY;
     public int DispWidth = 256, DispHeight = 240;
     bool _displayEnabled;
-
-    // Drawing state
-    int _drawX1, _drawY1, _drawX2 = 1023, _drawY2 = 511;
-    int _offX, _offY;
-    int _texPageX, _texPageY, _texDepth, _semiTrans;
 
     // GP0 FIFO
     readonly uint[] _fifo = new uint[32];
@@ -36,96 +29,77 @@ class PsxGpu
     int _xferSrcX, _xferSrcY;
 
     public long Cycle;
+    public int FrameCycle;   // set by PsxMachine each batch
     public int Gp0Count { get; private set; }
     public int Gp1Count { get; private set; }
     public int XferPixels { get; private set; }
     public int VramWriteCount { get; private set; }
 
-    // Thread-safe display snapshot
-    readonly ushort[] _snapVram = new ushort[1024 * 512];
-    readonly object   _snapLock = new();
-    int _snapDx, _snapDy, _snapDw, _snapDh;
+    // Convenience accessors that delegate to the renderer
+    public int Scale { get => Renderer.Scale; set => Renderer.Scale = value; }
+    public ushort[] Vram => Renderer.Vram;
 
-    // Pre-computed 5-bit to 8-bit LUT (avoids per-pixel division)
-    static readonly byte[] _5to8 = Build5to8Lut();
-    static byte[] Build5to8Lut()
+    // Polyline state
+    bool _polyLine;
+    bool _polyShaded;
+    uint _polyColor;
+    int _polyLastX, _polyLastY;
+    uint _polyLastCol;
+    int _polyWords;
+
+    // Profiling section IDs
+    static readonly int ProfTriFlat  = Profiler.Register("Gpu.TriFlat");
+    static readonly int ProfTriTex   = Profiler.Register("Gpu.TriTex");
+    static readonly int ProfRectFlat = Profiler.Register("Gpu.RectFlat");
+    static readonly int ProfRectTex  = Profiler.Register("Gpu.RectTex");
+    static readonly int ProfFillRect = Profiler.Register("Gpu.FillRect");
+    static readonly int ProfVramCopy = Profiler.Register("Gpu.VramCopy");
+    static readonly int ProfVBlank   = Profiler.Register("Gpu.VBlank");
+    static readonly int ProfLine     = Profiler.Register("Gpu.Line");
+
+    public PsxGpu() => Renderer = new SoftwareRenderer();
+
+    public void SetRenderer(PsxRendererBase renderer)
     {
-        var lut = new byte[32];
-        for (int i = 0; i < 32; i++) lut[i] = (byte)((i * 255 + 15) / 31);
-        return lut;
+        Renderer = renderer;
     }
 
     // ── External API ────────────────────────────────────────────────────────
 
+    bool _oddFrame;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint ReadStat()
     {
-        bool vblank = (Cycle % 560000) > 500000;
-        return 0x1C00_2000
-             | (_displayEnabled ? 0u : (1u << 23))
-             | (vblank ? 0u : (1u << 31));
+        uint stat = 0x1C00_2000;  // bits 26 (cmd ready), 27 (VRAM ready), 28 (DMA ready), 13
+        if (!_displayEnabled) stat |= 1u << 23;
+        if (_oddFrame)        stat |= 1u << 31;          // Even/Odd interlace toggle
+        return stat;
     }
 
     public uint ReadData()
     {
         if (!_xferOut) return 0;
+        var vram = Renderer.Vram;
         uint a = (uint)((_xferSrcY * 1024) + _xferSrcX);
-        ushort lo = Vram[a & (1024 * 512 - 1)];
-        ushort hi = Vram[(a + 1) & (1024 * 512 - 1)];
+        ushort lo = vram[a & (1024 * 512 - 1)];
+        ushort hi = vram[(a + 1) & (1024 * 512 - 1)];
         _xferSrcX += 2;
         return ((uint)hi << 16) | lo;
     }
 
-    // ── VBlank snapshot ─────────────────────────────────────────────────────
+    // ── VBlank / Display (delegate to renderer with profiling) ───────────────
 
     public void VBlankSnapshot()
     {
-        lock (_snapLock)
-        {
-            Buffer.BlockCopy(Vram, 0, _snapVram, 0, Vram.Length * 2);
-            _snapDx = DispStartX; _snapDy = DispStartY;
-            _snapDw = DispWidth;  _snapDh = DispHeight;
-        }
+        _oddFrame = !_oddFrame;
+        Profiler.Begin(ProfVBlank);
+        Renderer.VBlankSnapshot(DispStartX, DispStartY, DispWidth, DispHeight);
+        Profiler.End(ProfVBlank);
     }
 
-    /// <summary>
-    /// Called by the main (UI) thread to fill a pixel buffer from the VRAM snapshot.
-    /// Uses unsafe pointers and a pre-computed LUT for zero-division color conversion.
-    /// </summary>
     public unsafe void SnapshotDisplay(RlColor[] pixels, int outW, int outH)
-    {
-        lock (_snapLock)
-        {
-            int dx = _snapDx, dy = _snapDy, dw = _snapDw, dh = _snapDh;
-            fixed (ushort* vram = _snapVram)
-            fixed (RlColor* px = pixels)
-            fixed (byte* lut = _5to8)
-            {
-                for (int y = 0; y < outH; y++)
-                {
-                    RlColor* row = px + y * outW;
-                    if (y >= dh)
-                    {
-                        for (int x = 0; x < outW; x++)
-                            row[x] = new RlColor { a = 255 };
-                        continue;
-                    }
-                    int srcY = ((dy + y) & 511) * 1024;
-                    int copyW = Math.Min(dw, outW);
-                    for (int x = 0; x < copyW; x++)
-                    {
-                        ushort c = vram[srcY + ((dx + x) & 1023)];
-                        row[x].r = lut[c & 0x1F];
-                        row[x].g = lut[(c >> 5) & 0x1F];
-                        row[x].b = lut[(c >> 10) & 0x1F];
-                        row[x].a = 255;
-                    }
-                    for (int x = copyW; x < outW; x++)
-                        row[x] = new RlColor { a = 255 };
-                }
-            }
-        }
-    }
+        => Renderer.SnapshotDisplay(pixels, outW, outH);
 
     // ── GP1 – display control ───────────────────────────────────────────────
 
@@ -136,14 +110,17 @@ class PsxGpu
         switch (cmd)
         {
             case 0x00:
-                _fifoLen = 0; _xferIn = _xferOut = false;
+                _fifoLen = 0; _xferIn = _xferOut = false; _polyLine = false;
                 DispStartX = DispStartY = 0;
                 DispWidth = 256; DispHeight = 240;
                 _displayEnabled = false;
-                _texPageX = _texPageY = _texDepth = 0;
-                Array.Clear(Vram);
+                Renderer.TexPageX = Renderer.TexPageY = Renderer.TexDepth = 0;
+                Renderer.DrawX1 = Renderer.DrawY1 = 0;
+                Renderer.DrawX2 = 1023; Renderer.DrawY2 = 511;
+                Renderer.OffX = Renderer.OffY = 0;
+                Renderer.ClearVram();
                 break;
-            case 0x01: _fifoLen = 0; _xferIn = false; break;
+            case 0x01: _fifoLen = 0; _xferIn = false; _polyLine = false; break;
             case 0x03: _displayEnabled = (val & 1) == 0; break;
             case 0x04: break;
             case 0x05:
@@ -176,6 +153,12 @@ class PsxGpu
             return;
         }
 
+        if (_polyLine)
+        {
+            HandlePolyLine(val);
+            return;
+        }
+
         _fifo[_fifoLen++] = val;
         TryExecute();
     }
@@ -186,13 +169,37 @@ class PsxGpu
         if (_xferCount >= _xferW * _xferH) return;
         int x = _xferDstX + (_xferCount % _xferW);
         int y = _xferDstY + (_xferCount / _xferW);
-        Vram[((y & 511) * 1024) + (x & 1023)] = pix;
+        Renderer.WritePixel(x, y, pix);
         _xferCount++;
         if (_xferCount >= _xferW * _xferH)
         {
             XferPixels += _xferCount;
             VramWriteCount++;
             _xferIn = false;
+        }
+    }
+
+    void HandlePolyLine(uint val)
+    {
+        if ((val & 0xF000_F000) == 0x5000_5000) { _polyLine = false; return; }
+
+        if (_polyShaded)
+        {
+            _polyWords++;
+            if ((_polyWords & 1) == 1) { _polyLastCol = val; return; }
+            int x = S11(val); int y = S11(val >> 16);
+            Profiler.Begin(ProfLine);
+            Renderer.DrawLine(To555(_polyLastCol), _polyLastX, _polyLastY, x, y);
+            Profiler.End(ProfLine);
+            _polyLastX = x; _polyLastY = y;
+        }
+        else
+        {
+            int x = S11(val); int y = S11(val >> 16);
+            Profiler.Begin(ProfLine);
+            Renderer.DrawLine(To555(_polyColor), _polyLastX, _polyLastY, x, y);
+            Profiler.End(ProfLine);
+            _polyLastX = x; _polyLastY = y;
         }
     }
 
@@ -220,8 +227,9 @@ class PsxGpu
         0x38 or 0x39 or 0x3A or 0x3B => 8,
         0x3C or 0x3D or 0x3E or 0x3F => 12,
         0x40 or 0x41 or 0x42 or 0x43 => 3,
-        0x48 or 0x4A or 0x4C or 0x4E => 3,
+        0x48 or 0x49 or 0x4A or 0x4B or 0x4C or 0x4D or 0x4E or 0x4F => 3,
         0x50 or 0x51 or 0x52 or 0x53 => 4,
+        0x58 or 0x59 or 0x5A or 0x5B or 0x5C or 0x5D or 0x5E or 0x5F => 4,
         0x60 or 0x61 or 0x62 or 0x63 => 3,
         0x64 or 0x65 or 0x66 or 0x67 => 4,
         0x68 or 0x69 or 0x6A or 0x6B => 2,
@@ -240,64 +248,204 @@ class PsxGpu
     {
         uint col = _fifo[0] & 0xFF_FFFF;
         uint raw0 = _fifo[0];
-
-        // GPU command logging removed for performance
+        var R = Renderer;
 
         switch (cmd)
         {
-            case 0x02: // Fill rect
+            case 0x02:
             {
+                Profiler.Begin(ProfFillRect);
                 int x = (int)(_fifo[1] & 0x3F0);
                 int y = (int)((_fifo[1] >> 16) & 0x1FF);
                 int w = (int)((_fifo[2] & 0x3FF) + 0xF) & ~0xF;
                 int h = (int)((_fifo[2] >> 16) & 0x1FF);
-                ushort c = To555(col);
-                for (int py = y; py < y + h && py < 512; py++)
-                    for (int px = x; px < x + w && px < 1024; px++)
-                        Vram[(py & 511) * 1024 + (px & 1023)] = c;
+                R.FillRect(x, y, w, h, PsxRendererBase.To555(col));
+                Profiler.End(ProfFillRect);
                 break;
             }
 
             case 0x20: case 0x21: case 0x22: case 0x23:
-                DrawTriFlat(To555(col), _fifo[1], _fifo[2], _fifo[3]); break;
-            case 0x24: case 0x25: case 0x26: case 0x27:
-                SetTexPageFromAttr((int)(_fifo[4] >> 16));
-                DrawTriTex(_fifo[1], _fifo[2], _fifo[3], _fifo[4], _fifo[5], _fifo[6], (int)(_fifo[2] >> 16)); break;
+                Profiler.Begin(ProfTriFlat);
+                R.DrawTriFlat(PsxRendererBase.To555(col), _fifo[1], _fifo[2], _fifo[3]);
+                Profiler.End(ProfTriFlat);
+                break;
+            case 0x24: case 0x26:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[4] >> 16));
+                R.DrawTriTexBlend(col, _fifo[1], _fifo[2], _fifo[3], _fifo[4], _fifo[5], _fifo[6], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
+            case 0x25: case 0x27:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[4] >> 16));
+                R.DrawTriTex(_fifo[1], _fifo[2], _fifo[3], _fifo[4], _fifo[5], _fifo[6], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
             case 0x28: case 0x29: case 0x2A: case 0x2B:
-                DrawTriFlat(To555(col), _fifo[1], _fifo[2], _fifo[3]);
-                DrawTriFlat(To555(col), _fifo[2], _fifo[3], _fifo[4]); break;
-            case 0x2C: case 0x2D: case 0x2E: case 0x2F:
-                SetTexPageFromAttr((int)(_fifo[4] >> 16));
-                DrawTriTex(_fifo[1], _fifo[2], _fifo[3], _fifo[4], _fifo[5], _fifo[6], (int)(_fifo[2] >> 16));
-                DrawTriTex(_fifo[3], _fifo[4], _fifo[5], _fifo[6], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16)); break;
+                Profiler.Begin(ProfTriFlat);
+                R.DrawTriFlat(PsxRendererBase.To555(col), _fifo[1], _fifo[2], _fifo[3]);
+                R.DrawTriFlat(PsxRendererBase.To555(col), _fifo[2], _fifo[3], _fifo[4]);
+                Profiler.End(ProfTriFlat);
+                break;
+            case 0x2C: case 0x2E:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[4] >> 16));
+                R.DrawTriTexBlend(col, _fifo[1], _fifo[2], _fifo[3], _fifo[4], _fifo[5], _fifo[6], (int)(_fifo[2] >> 16));
+                R.DrawTriTexBlend(col, _fifo[3], _fifo[4], _fifo[5], _fifo[6], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
+            case 0x2D: case 0x2F:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[4] >> 16));
+                R.DrawTriTex(_fifo[1], _fifo[2], _fifo[3], _fifo[4], _fifo[5], _fifo[6], (int)(_fifo[2] >> 16));
+                R.DrawTriTex(_fifo[3], _fifo[4], _fifo[5], _fifo[6], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
             case 0x30: case 0x31: case 0x32: case 0x33:
-                DrawTriFlat(To555(AvgCol(_fifo[0], _fifo[2], _fifo[4])), _fifo[1], _fifo[3], _fifo[5]); break;
-            case 0x34: case 0x35: case 0x36: case 0x37:
-                SetTexPageFromAttr((int)(_fifo[5] >> 16));
-                DrawTriTex(_fifo[1], _fifo[2], _fifo[4], _fifo[5], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16)); break;
+                Profiler.Begin(ProfTriFlat);
+                R.DrawTriGouraud(_fifo[0] & 0xFF_FFFF, _fifo[2] & 0xFF_FFFF, _fifo[4] & 0xFF_FFFF, _fifo[1], _fifo[3], _fifo[5]);
+                Profiler.End(ProfTriFlat);
+                break;
+            case 0x34: case 0x36:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[5] >> 16));
+                R.DrawTriGouraudTex(_fifo[0] & 0xFF_FFFF, _fifo[3] & 0xFF_FFFF, _fifo[6] & 0xFF_FFFF,
+                    _fifo[1], _fifo[2], _fifo[4], _fifo[5], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
+            case 0x35: case 0x37:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[5] >> 16));
+                R.DrawTriTex(_fifo[1], _fifo[2], _fifo[4], _fifo[5], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
             case 0x38: case 0x39: case 0x3A: case 0x3B:
-                DrawTriFlat(To555(AvgCol(_fifo[0], _fifo[2], _fifo[4])), _fifo[1], _fifo[3], _fifo[5]);
-                DrawTriFlat(To555(AvgCol(_fifo[2], _fifo[4], _fifo[6])), _fifo[3], _fifo[5], _fifo[7]); break;
-            case 0x3C: case 0x3D: case 0x3E: case 0x3F:
-                SetTexPageFromAttr((int)(_fifo[5] >> 16));
-                DrawTriTex(_fifo[1], _fifo[2], _fifo[4], _fifo[5], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16));
-                DrawTriTex(_fifo[4], _fifo[5], _fifo[7], _fifo[8], _fifo[10], _fifo[11], (int)(_fifo[2] >> 16)); break;
+                Profiler.Begin(ProfTriFlat);
+                R.DrawTriGouraud(_fifo[0] & 0xFF_FFFF, _fifo[2] & 0xFF_FFFF, _fifo[4] & 0xFF_FFFF, _fifo[1], _fifo[3], _fifo[5]);
+                R.DrawTriGouraud(_fifo[2] & 0xFF_FFFF, _fifo[4] & 0xFF_FFFF, _fifo[6] & 0xFF_FFFF, _fifo[3], _fifo[5], _fifo[7]);
+                Profiler.End(ProfTriFlat);
+                break;
+            case 0x3C: case 0x3E:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[5] >> 16));
+                R.DrawTriGouraudTex(_fifo[0] & 0xFF_FFFF, _fifo[3] & 0xFF_FFFF, _fifo[6] & 0xFF_FFFF,
+                    _fifo[1], _fifo[2], _fifo[4], _fifo[5], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16));
+                R.DrawTriGouraudTex(_fifo[3] & 0xFF_FFFF, _fifo[6] & 0xFF_FFFF, _fifo[9] & 0xFF_FFFF,
+                    _fifo[4], _fifo[5], _fifo[7], _fifo[8], _fifo[10], _fifo[11], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
+            case 0x3D: case 0x3F:
+                Profiler.Begin(ProfTriTex);
+                SetTexPage((int)(_fifo[5] >> 16));
+                R.DrawTriTex(_fifo[1], _fifo[2], _fifo[4], _fifo[5], _fifo[7], _fifo[8], (int)(_fifo[2] >> 16));
+                R.DrawTriTex(_fifo[4], _fifo[5], _fifo[7], _fifo[8], _fifo[10], _fifo[11], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfTriTex);
+                break;
+
+            // ── Lines ────────────────────────────────────────────────────────
+            case 0x40: case 0x41: case 0x42: case 0x43:
+            {
+                Profiler.Begin(ProfLine);
+                int x0 = S11(_fifo[1]); int y0 = S11(_fifo[1] >> 16);
+                int x1 = S11(_fifo[2]); int y1 = S11(_fifo[2] >> 16);
+                R.DrawLine(PsxRendererBase.To555(col), x0, y0, x1, y1);
+                Profiler.End(ProfLine);
+                break;
+            }
+            case 0x48: case 0x4A: case 0x4C: case 0x4E:
+            {
+                Profiler.Begin(ProfLine);
+                int x0 = S11(_fifo[1]); int y0 = S11(_fifo[1] >> 16);
+                int x1 = S11(_fifo[2]); int y1 = S11(_fifo[2] >> 16);
+                R.DrawLine(PsxRendererBase.To555(col), x0, y0, x1, y1);
+                Profiler.End(ProfLine);
+                _polyLine = true; _polyShaded = false;
+                _polyColor = col; _polyLastX = x1; _polyLastY = y1;
+                _polyWords = 0;
+                break;
+            }
+            case 0x50: case 0x51: case 0x52: case 0x53:
+            {
+                Profiler.Begin(ProfLine);
+                int x0 = S11(_fifo[1]); int y0 = S11(_fifo[1] >> 16);
+                int x1 = S11(_fifo[3]); int y1 = S11(_fifo[3] >> 16);
+                R.DrawLine(PsxRendererBase.To555(PsxRendererBase.AvgCol(_fifo[0], _fifo[2], _fifo[2])), x0, y0, x1, y1);
+                Profiler.End(ProfLine);
+                break;
+            }
+            case 0x58: case 0x5A: case 0x5C: case 0x5E:
+            {
+                Profiler.Begin(ProfLine);
+                int x0 = S11(_fifo[1]); int y0 = S11(_fifo[1] >> 16);
+                int x1 = S11(_fifo[3]); int y1 = S11(_fifo[3] >> 16);
+                R.DrawLine(PsxRendererBase.To555(PsxRendererBase.AvgCol(_fifo[0], _fifo[2], _fifo[2])), x0, y0, x1, y1);
+                Profiler.End(ProfLine);
+                _polyLine = true; _polyShaded = true;
+                _polyLastX = x1; _polyLastY = y1; _polyLastCol = _fifo[2];
+                _polyWords = 0;
+                break;
+            }
+
             case 0x60: case 0x61: case 0x62: case 0x63:
-                DrawRectFlat(To555(col), _fifo[1], _fifo[2]); break;
-            case 0x64: case 0x65: case 0x66: case 0x67:
-                DrawRectTex(_fifo[1], _fifo[2], _fifo[3], (int)(_fifo[2] >> 16)); break;
+                Profiler.Begin(ProfRectFlat);
+                R.DrawRectFlat(PsxRendererBase.To555(col), _fifo[1], _fifo[2]);
+                Profiler.End(ProfRectFlat);
+                break;
+            case 0x64: case 0x66:
+                Profiler.Begin(ProfRectTex);
+                R.DrawRectTexBlend(col, _fifo[1], _fifo[2], _fifo[3], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfRectTex);
+                break;
+            case 0x65: case 0x67:
+                Profiler.Begin(ProfRectTex);
+                R.DrawRectTex(_fifo[1], _fifo[2], _fifo[3], (int)(_fifo[2] >> 16));
+                Profiler.End(ProfRectTex);
+                break;
             case 0x68: case 0x69: case 0x6A: case 0x6B:
-                DrawRectFlat(To555(col), _fifo[1], 0x0001_0001); break;
+                Profiler.Begin(ProfRectFlat);
+                R.DrawRectFlat(PsxRendererBase.To555(col), _fifo[1], 0x0001_0001);
+                Profiler.End(ProfRectFlat);
+                break;
             case 0x70: case 0x71: case 0x72: case 0x73:
-                DrawRectFlat(To555(col), _fifo[1], 0x0008_0008); break;
-            case 0x74: case 0x75: case 0x76: case 0x77:
-                DrawRectTex(_fifo[1], _fifo[2], 0x0008_0008, (int)(_fifo[2] >> 16)); break;
+                Profiler.Begin(ProfRectFlat);
+                R.DrawRectFlat(PsxRendererBase.To555(col), _fifo[1], 0x0008_0008);
+                Profiler.End(ProfRectFlat);
+                break;
+            case 0x74: case 0x76:
+                Profiler.Begin(ProfRectTex);
+                R.DrawRectTexBlend(col, _fifo[1], _fifo[2], 0x0008_0008, (int)(_fifo[2] >> 16));
+                Profiler.End(ProfRectTex);
+                break;
+            case 0x75: case 0x77:
+                Profiler.Begin(ProfRectTex);
+                R.DrawRectTex(_fifo[1], _fifo[2], 0x0008_0008, (int)(_fifo[2] >> 16));
+                Profiler.End(ProfRectTex);
+                break;
             case 0x78: case 0x79: case 0x7A: case 0x7B:
-                DrawRectFlat(To555(col), _fifo[1], 0x0010_0010); break;
-            case 0x7C: case 0x7D: case 0x7E: case 0x7F:
-                DrawRectTex(_fifo[1], _fifo[2], 0x0010_0010, (int)(_fifo[2] >> 16)); break;
+                Profiler.Begin(ProfRectFlat);
+                R.DrawRectFlat(PsxRendererBase.To555(col), _fifo[1], 0x0010_0010);
+                Profiler.End(ProfRectFlat);
+                break;
+            case 0x7C: case 0x7E:
+                Profiler.Begin(ProfRectTex);
+                R.DrawRectTexBlend(col, _fifo[1], _fifo[2], 0x0010_0010, (int)(_fifo[2] >> 16));
+                Profiler.End(ProfRectTex);
+                break;
+            case 0x7D: case 0x7F:
+                Profiler.Begin(ProfRectTex);
+                R.DrawRectTex(_fifo[1], _fifo[2], 0x0010_0010, (int)(_fifo[2] >> 16));
+                Profiler.End(ProfRectTex);
+                break;
             case 0x80:
-                CopyVV(_fifo[1], _fifo[2], _fifo[3]); break;
+            {
+                Profiler.Begin(ProfVramCopy);
+                int sx = (int)(_fifo[1] & 0x3FF), sy = (int)((_fifo[1] >> 16) & 0x1FF);
+                int dx = (int)(_fifo[2] & 0x3FF), dy = (int)((_fifo[2] >> 16) & 0x1FF);
+                int cw = (int)(_fifo[3] & 0xFFFF), ch = (int)((_fifo[3] >> 16) & 0x1FF);
+                R.CopyVram(sx, sy, dx, dy, cw, ch);
+                Profiler.End(ProfVramCopy);
+                break;
+            }
             case 0xA0:
             {
                 int x = (int)(_fifo[1] & 0x3FF), y = (int)((_fifo[1] >> 16) & 0x1FF);
@@ -315,226 +463,34 @@ class PsxGpu
             case 0xE1:
             {
                 uint d = raw0 & 0x00FFFFFF;
-                _texPageX  = (int)((d & 0x0F) * 64);
-                _texPageY  = (int)(((d >> 4) & 1) * 256);
-                _semiTrans = (int)((d >> 5) & 3);
-                _texDepth  = (int)((d >> 7) & 3);
+                R.TexPageX  = (int)((d & 0x0F) * 64);
+                R.TexPageY  = (int)(((d >> 4) & 1) * 256);
+                R.SemiTrans = (int)((d >> 5) & 3);
+                R.TexDepth  = (int)((d >> 7) & 3);
                 break;
             }
             case 0xE2: break;
-            case 0xE3: _drawX1 = (int)(raw0 & 0x3FF); _drawY1 = (int)((raw0 >> 10) & 0x1FF); break;
-            case 0xE4: _drawX2 = (int)(raw0 & 0x3FF); _drawY2 = (int)((raw0 >> 10) & 0x1FF); break;
+            case 0xE3: R.DrawX1 = (int)(raw0 & 0x3FF); R.DrawY1 = (int)((raw0 >> 10) & 0x1FF); break;
+            case 0xE4: R.DrawX2 = (int)(raw0 & 0x3FF); R.DrawY2 = (int)((raw0 >> 10) & 0x1FF); break;
             case 0xE5:
-                _offX = Sext11((int)(raw0 & 0x7FF));
-                _offY = Sext11((int)((raw0 >> 11) & 0x7FF));
+                R.OffX = PsxRendererBase.Sext11((int)(raw0 & 0x7FF));
+                R.OffY = PsxRendererBase.Sext11((int)((raw0 >> 11) & 0x7FF));
                 break;
             case 0xE6: break;
         }
     }
 
-    // ── Drawing helpers ─────────────────────────────────────────────────────
-
-    void SetTexPageFromAttr(int a)
-    {
-        _texPageX  = (a & 0x0F) * 64;
-        _texPageY  = ((a >> 4) & 1) * 256;
-        _semiTrans = (a >> 5) & 3;
-        _texDepth  = (a >> 7) & 3;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static short S11(uint n) => PsxRendererBase.S11(n);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void Put(int x, int y, ushort c)
+    static ushort To555(uint rgb) => PsxRendererBase.To555(rgb);
+
+    void SetTexPage(int a)
     {
-        if (x >= _drawX1 && x <= _drawX2 && y >= _drawY1 && y <= _drawY2)
-            Vram[(y & 511) * 1024 + (x & 1023)] = c;
+        Renderer.TexPageX  = (a & 0x0F) * 64;
+        Renderer.TexPageY  = ((a >> 4) & 1) * 256;
+        Renderer.SemiTrans = (a >> 5) & 3;
+        Renderer.TexDepth  = (a >> 7) & 3;
     }
-
-    void DrawRectFlat(ushort c, uint pos, uint size)
-    {
-        int x0 = S11(pos & 0xFFFF) + _offX;
-        int y0 = S11(pos >> 16) + _offY;
-        int w = (int)(size & 0xFFFF), h = (int)(size >> 16);
-        int xStart = Math.Max(x0, _drawX1);
-        int xEnd   = Math.Min(x0 + w, _drawX2 + 1);
-        int yStart = Math.Max(y0, _drawY1);
-        int yEnd   = Math.Min(y0 + h, _drawY2 + 1);
-        for (int py = yStart; py < yEnd; py++)
-            for (int px = xStart; px < xEnd; px++)
-                Vram[(py & 511) * 1024 + (px & 1023)] = c;
-    }
-
-    void DrawRectTex(uint pos, uint uvclut, uint size, int clutAttr)
-    {
-        int x0 = S11(pos & 0xFFFF) + _offX;
-        int y0 = S11(pos >> 16) + _offY;
-        int w = (int)(size & 0xFFFF), h = (int)(size >> 16);
-        byte u0 = (byte)(uvclut & 0xFF), v0 = (byte)((uvclut >> 8) & 0xFF);
-        int cx = ((clutAttr & 0x3F) << 4) & 1023;
-        int cy = ((clutAttr >> 6) & 0x1FF) & 511;
-        int xStart = Math.Max(x0, _drawX1);
-        int xEnd   = Math.Min(x0 + w, _drawX2 + 1);
-        int yStart = Math.Max(y0, _drawY1);
-        int yEnd   = Math.Min(y0 + h, _drawY2 + 1);
-        for (int py = yStart; py < yEnd; py++)
-            for (int px = xStart; px < xEnd; px++)
-            {
-                ushort texel = SampleTexel(u0 + (px - x0), v0 + (py - y0), cx, cy);
-                if (texel != 0) Vram[(py & 511) * 1024 + (px & 1023)] = texel;
-            }
-    }
-
-    void DrawTriFlat(ushort c, uint v0w, uint v1w, uint v2w)
-    {
-        int x0 = S11(v0w & 0xFFFF) + _offX, y0 = S11(v0w >> 16) + _offY;
-        int x1 = S11(v1w & 0xFFFF) + _offX, y1 = S11(v1w >> 16) + _offY;
-        int x2 = S11(v2w & 0xFFFF) + _offX, y2 = S11(v2w >> 16) + _offY;
-
-        int area = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
-        if (area == 0) return;
-
-        if (area < 0) {
-            (x1, x2) = (x2, x1);
-            (y1, y2) = (y2, y1);
-            area = -area;
-        }
-
-        if ((Math.Max(x0, Math.Max(x1, x2)) - Math.Min(x0, Math.Min(x1, x2))) > 1024) return;
-        if ((Math.Max(y0, Math.Max(y1, y2)) - Math.Min(y0, Math.Min(y1, y2))) > 512) return;
-
-        int minX = Math.Max(_drawX1, Math.Min(x0, Math.Min(x1, x2)));
-        int maxX = Math.Min(_drawX2, Math.Max(x0, Math.Max(x1, x2)));
-        int minY = Math.Max(_drawY1, Math.Min(y0, Math.Min(y1, y2)));
-        int maxY = Math.Min(_drawY2, Math.Max(y0, Math.Max(y1, y2)));
-
-        int A12 = y1 - y2, B12 = x2 - x1;
-        int A20 = y2 - y0, B20 = x0 - x2;
-        int A01 = y0 - y1, B01 = x1 - x0;
-
-        int w0_row = A12 * (minX - x1) + B12 * (minY - y1);
-        int w1_row = A20 * (minX - x2) + B20 * (minY - y2);
-        int w2_row = A01 * (minX - x0) + B01 * (minY - y0);
-
-        for (int py = minY; py <= maxY; py++)
-        {
-            int w0 = w0_row, w1 = w1_row, w2 = w2_row;
-            for (int px = minX; px <= maxX; px++)
-            {
-                if ((w0 | w1 | w2) >= 0)
-                    Vram[(py & 511) * 1024 + (px & 1023)] = c;
-                w0 += A12; w1 += A20; w2 += A01;
-            }
-            w0_row += B12; w1_row += B20; w2_row += B01;
-        }
-    }
-
-    void DrawTriTex(uint v0w, uint uv0, uint v1w, uint uv1, uint v2w, uint uv2, int clutAttr)
-    {
-        int x0 = S11(v0w & 0xFFFF) + _offX, y0 = S11(v0w >> 16) + _offY;
-        int x1 = S11(v1w & 0xFFFF) + _offX, y1 = S11(v1w >> 16) + _offY;
-        int x2 = S11(v2w & 0xFFFF) + _offX, y2 = S11(v2w >> 16) + _offY;
-
-        byte u0b = (byte)(uv0 & 0xFF), v0b = (byte)((uv0 >> 8) & 0xFF);
-        byte u1b = (byte)(uv1 & 0xFF), v1b = (byte)((uv1 >> 8) & 0xFF);
-        byte u2b = (byte)(uv2 & 0xFF), v2b = (byte)((uv2 >> 8) & 0xFF);
-        int cx = ((clutAttr & 0x3F) << 4) & 1023;
-        int cy = ((clutAttr >> 6) & 0x1FF) & 511;
-
-        int area = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
-        if (area == 0) return;
-
-        if (area < 0) {
-            (x1, x2) = (x2, x1);
-            (y1, y2) = (y2, y1);
-            (u1b, u2b) = (u2b, u1b);
-            (v1b, v2b) = (v2b, v1b);
-            area = -area;
-        }
-
-        if ((Math.Max(x0, Math.Max(x1, x2)) - Math.Min(x0, Math.Min(x1, x2))) > 1024) return;
-        if ((Math.Max(y0, Math.Max(y1, y2)) - Math.Min(y0, Math.Min(y1, y2))) > 512) return;
-
-        int minX = Math.Max(_drawX1, Math.Min(x0, Math.Min(x1, x2)));
-        int maxX = Math.Min(_drawX2, Math.Max(x0, Math.Max(x1, x2)));
-        int minY = Math.Max(_drawY1, Math.Min(y0, Math.Min(y1, y2)));
-        int maxY = Math.Min(_drawY2, Math.Max(y0, Math.Max(y1, y2)));
-
-        int A12 = y1 - y2, B12 = x2 - x1;
-        int A20 = y2 - y0, B20 = x0 - x2;
-        int A01 = y0 - y1, B01 = x1 - x0;
-
-        int w0_row = A12 * (minX - x1) + B12 * (minY - y1);
-        int w1_row = A20 * (minX - x2) + B20 * (minY - y2);
-        int w2_row = A01 * (minX - x0) + B01 * (minY - y0);
-
-        for (int py = minY; py <= maxY; py++)
-        {
-            int w0 = w0_row, w1 = w1_row, w2 = w2_row;
-            for (int px = minX; px <= maxX; px++)
-            {
-                if ((w0 | w1 | w2) >= 0)
-                {
-                    int u = (u0b * w0 + u1b * w1 + u2b * w2) / area;
-                    int v = (v0b * w0 + v1b * w1 + v2b * w2) / area;
-                    ushort texel = SampleTexel(u, v, cx, cy);
-                    if (texel != 0)
-                        Vram[(py & 511) * 1024 + (px & 1023)] = texel;
-                }
-                w0 += A12; w1 += A20; w2 += A01;
-            }
-            w0_row += B12; w1_row += B20; w2_row += B01;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    ushort SampleTexel(int u, int v, int clutX, int clutY)
-    {
-        u &= 0xFF; v &= 0xFF;
-        int row = (_texPageY + v) & 511;
-
-        if (_texDepth == 0) // 4bpp
-        {
-            int col = (_texPageX + u / 4) & 1023;
-            ushort word = Vram[row * 1024 + col];
-            int nib = (word >> ((u & 3) * 4)) & 0xF;
-            return Vram[(clutY & 511) * 1024 + ((clutX + nib) & 1023)];
-        }
-        if (_texDepth == 1) // 8bpp
-        {
-            int col = (_texPageX + u / 2) & 1023;
-            ushort word = Vram[row * 1024 + col];
-            int idx = (u & 1) == 0 ? (word & 0xFF) : (word >> 8);
-            return Vram[(clutY & 511) * 1024 + ((clutX + idx) & 1023)];
-        }
-        // 15bpp direct
-        return Vram[row * 1024 + ((_texPageX + u) & 1023)];
-    }
-
-    void CopyVV(uint src, uint dst, uint size)
-    {
-        int sx = (int)(src & 0x3FF), sy = (int)((src >> 16) & 0x1FF);
-        int dx = (int)(dst & 0x3FF), dy = (int)((dst >> 16) & 0x1FF);
-        int w = (int)(size & 0xFFFF), h = (int)((size >> 16) & 0x1FF);
-        for (int py = 0; py < h; py++)
-            for (int px = 0; px < w; px++)
-                Vram[((dy + py) & 511) * 1024 + ((dx + px) & 1023)] =
-                    Vram[((sy + py) & 511) * 1024 + ((sx + px) & 1023)];
-    }
-
-    // ── Utility ─────────────────────────────────────────────────────────────
-
-    static ushort To555(uint rgb) =>
-        (ushort)((((byte)rgb >> 3) & 0x1F) | ((((byte)(rgb >> 8) >> 3) & 0x1F) << 5) | ((((byte)(rgb >> 16) >> 3) & 0x1F) << 10));
-
-    static uint AvgCol(uint a, uint b, uint c)
-    {
-        byte r = (byte)(((a & 0xFF) + (b & 0xFF) + (c & 0xFF)) / 3);
-        byte g = (byte)((((a >> 8) & 0xFF) + ((b >> 8) & 0xFF) + ((c >> 8) & 0xFF)) / 3);
-        byte bl = (byte)((((a >> 16) & 0xFF) + ((b >> 16) & 0xFF) + ((c >> 16) & 0xFF)) / 3);
-        return (uint)(r | (g << 8) | (bl << 16));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static short S11(uint n) => (short)(((int)n << 21) >> 21);
-
-    static int Sext11(int v) => (v & 0x400) != 0 ? v | unchecked((int)0xFFFF_F800) : v;
 }

@@ -1,0 +1,258 @@
+using System.Numerics;
+using System.Runtime.InteropServices;
+using ImGuiNET;
+using Raylib_CsLo;
+using static Raylib_CsLo.Raylib;
+using static Raylib_CsLo.RlGl;
+
+namespace N64Emu;
+
+internal static unsafe class RlImGui
+{
+    static Texture _fontTex;
+    static bool    _ready;
+
+    static string? _lastClip;
+
+    static readonly (KeyboardKey rl, ImGuiKey im)[] _keys =
+    {
+        (KeyboardKey.KEY_TAB,           ImGuiKey.Tab),
+        (KeyboardKey.KEY_LEFT,          ImGuiKey.LeftArrow),
+        (KeyboardKey.KEY_RIGHT,         ImGuiKey.RightArrow),
+        (KeyboardKey.KEY_UP,            ImGuiKey.UpArrow),
+        (KeyboardKey.KEY_DOWN,          ImGuiKey.DownArrow),
+        (KeyboardKey.KEY_PAGE_UP,       ImGuiKey.PageUp),
+        (KeyboardKey.KEY_PAGE_DOWN,     ImGuiKey.PageDown),
+        (KeyboardKey.KEY_HOME,          ImGuiKey.Home),
+        (KeyboardKey.KEY_END,           ImGuiKey.End),
+        (KeyboardKey.KEY_INSERT,        ImGuiKey.Insert),
+        (KeyboardKey.KEY_DELETE,        ImGuiKey.Delete),
+        (KeyboardKey.KEY_BACKSPACE,     ImGuiKey.Backspace),
+        (KeyboardKey.KEY_SPACE,         ImGuiKey.Space),
+        (KeyboardKey.KEY_ENTER,         ImGuiKey.Enter),
+        (KeyboardKey.KEY_ESCAPE,        ImGuiKey.Escape),
+        (KeyboardKey.KEY_LEFT_CONTROL,  ImGuiKey.LeftCtrl),
+        (KeyboardKey.KEY_LEFT_SHIFT,    ImGuiKey.LeftShift),
+        (KeyboardKey.KEY_LEFT_ALT,      ImGuiKey.LeftAlt),
+        (KeyboardKey.KEY_RIGHT_CONTROL, ImGuiKey.RightCtrl),
+        (KeyboardKey.KEY_RIGHT_SHIFT,   ImGuiKey.RightShift),
+        (KeyboardKey.KEY_RIGHT_ALT,     ImGuiKey.RightAlt),
+        (KeyboardKey.KEY_A,             ImGuiKey.A),
+        (KeyboardKey.KEY_C,             ImGuiKey.C),
+        (KeyboardKey.KEY_S,             ImGuiKey.S),
+        (KeyboardKey.KEY_V,             ImGuiKey.V),
+        (KeyboardKey.KEY_X,             ImGuiKey.X),
+        (KeyboardKey.KEY_Y,             ImGuiKey.Y),
+        (KeyboardKey.KEY_Z,             ImGuiKey.Z),
+        (KeyboardKey.KEY_F1,            ImGuiKey.F1),
+        (KeyboardKey.KEY_F2,            ImGuiKey.F2),
+        (KeyboardKey.KEY_F5,            ImGuiKey.F5),
+        (KeyboardKey.KEY_F11,           ImGuiKey.F11),
+    };
+
+    public static void Setup()
+    {
+        ImGui.CreateContext();
+        var io = ImGui.GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+        io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+        ApplyStyle();
+        BuildFontAtlas();
+        _ready = true;
+    }
+
+    static void BuildFontAtlas()
+    {
+        var io = ImGui.GetIO();
+        io.Fonts.AddFontDefault();
+        io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out int w, out int h);
+
+        var img = new Image
+        {
+            data    = pixels,
+            width   = w,
+            height  = h,
+            mipmaps = 1,
+            format  = (int)PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
+        };
+        _fontTex = LoadTextureFromImage(img);
+        SetTextureFilter(_fontTex, TextureFilter.TEXTURE_FILTER_BILINEAR);
+
+        io.Fonts.SetTexID(new IntPtr(_fontTex.id));
+        io.Fonts.ClearTexData();
+    }
+
+    public static void Begin()
+    {
+        if (!_ready) return;
+
+        var io = ImGui.GetIO();
+        io.DisplaySize = new Vector2(GetScreenWidth(), GetScreenHeight());
+        io.DeltaTime   = MathF.Max(GetFrameTime(), 0.0001f);
+
+        io.MousePos     = GetMousePosition();
+        io.MouseDown[0] = IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
+        io.MouseDown[1] = IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT);
+        io.MouseDown[2] = IsMouseButtonDown(MouseButton.MOUSE_BUTTON_MIDDLE);
+        io.MouseWheel  += GetMouseWheelMove();
+
+        io.KeyCtrl  = IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL)  || IsKeyDown(KeyboardKey.KEY_RIGHT_CONTROL);
+        io.KeyShift = IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT)    || IsKeyDown(KeyboardKey.KEY_RIGHT_SHIFT);
+        io.KeyAlt   = IsKeyDown(KeyboardKey.KEY_LEFT_ALT)      || IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
+
+        foreach (var (rl, im) in _keys)
+            io.AddKeyEvent(im, IsKeyDown(rl));
+
+        int ch;
+        while ((ch = GetCharPressed()) != 0)
+            io.AddInputCharacter((uint)ch);
+
+        if (io.KeyCtrl && IsKeyPressed(KeyboardKey.KEY_V))
+        {
+            unsafe
+            {
+                sbyte* ptr = GetClipboardText();
+                if (ptr != null)
+                {
+                    string text = Marshal.PtrToStringUTF8((IntPtr)ptr) ?? "";
+                    ImGui.SetClipboardText(text);
+                    _lastClip = text;
+                }
+            }
+        }
+
+        ImGui.NewFrame();
+    }
+
+    public static void End()
+    {
+        if (!_ready) return;
+
+        string? clip = null;
+        try { clip = ImGui.GetClipboardText(); } catch { }
+        if (clip != null && clip != _lastClip)
+        {
+            _lastClip = clip;
+            SetClipboardText(clip);
+        }
+
+        ImGui.Render();
+        RenderDrawData(ImGui.GetDrawData());
+    }
+
+    static void RenderDrawData(ImDrawDataPtr data)
+    {
+        int sh = GetScreenHeight();
+
+        rlDrawRenderBatchActive();
+        rlDisableBackfaceCulling();
+        rlDisableDepthTest();
+
+        for (int n = 0; n < data.CmdListsCount; n++)
+        {
+            var list = data.CmdLists[n];
+            var vtx  = (ImDrawVert*)list.VtxBuffer.Data;
+            var idx  = (ushort*)   list.IdxBuffer.Data;
+
+            for (int ci = 0; ci < list.CmdBuffer.Size; ci++)
+            {
+                var cmd = list.CmdBuffer[ci];
+                if (cmd.UserCallback != IntPtr.Zero) continue;
+
+                rlEnableScissorTest();
+                rlScissor(
+                    (int)cmd.ClipRect.X,
+                    sh - (int)cmd.ClipRect.W,
+                    (int)(cmd.ClipRect.Z - cmd.ClipRect.X),
+                    (int)(cmd.ClipRect.W - cmd.ClipRect.Y));
+
+                rlBegin(4);
+                rlSetTexture((uint)(nint)cmd.TextureId);
+
+                for (uint e = 0; e < cmd.ElemCount; e++)
+                {
+                    ushort    vi = idx[cmd.IdxOffset + e];
+                    ImDrawVert v  = vtx[cmd.VtxOffset + vi];
+                    uint c = v.col;
+                    rlColor4ub((byte)c, (byte)(c >> 8), (byte)(c >> 16), (byte)(c >> 24));
+                    rlTexCoord2f(v.uv.X, v.uv.Y);
+                    rlVertex2f(v.pos.X, v.pos.Y);
+                }
+
+                rlEnd();
+                rlDrawRenderBatchActive();
+            }
+        }
+
+        rlSetTexture(0);
+        rlDisableScissorTest();
+    }
+
+    public static void Shutdown()
+    {
+        if (!_ready) return;
+        UnloadTexture(_fontTex);
+        ImGui.DestroyContext();
+        _ready = false;
+    }
+
+    static void ApplyStyle()
+    {
+        ImGui.StyleColorsDark();
+        var s = ImGui.GetStyle();
+        s.WindowRounding    = 5f;
+        s.FrameRounding     = 3f;
+        s.GrabRounding      = 3f;
+        s.TabRounding       = 4f;
+        s.ScrollbarRounding = 3f;
+        s.WindowBorderSize  = 1f;
+        s.FrameBorderSize   = 0f;
+        s.ItemSpacing       = new Vector2(6, 4);
+        s.FramePadding      = new Vector2(6, 4);
+
+        var c = s.Colors;
+        c[(int)ImGuiCol.WindowBg]             = V(0.08f, 0.10f, 0.06f);
+        c[(int)ImGuiCol.ChildBg]              = V(0.06f, 0.08f, 0.05f);
+        c[(int)ImGuiCol.PopupBg]              = V4(0.08f, 0.10f, 0.06f, 0.98f);
+        c[(int)ImGuiCol.TitleBg]              = V(0.05f, 0.07f, 0.04f);
+        c[(int)ImGuiCol.TitleBgActive]        = V(0.10f, 0.20f, 0.08f);
+        c[(int)ImGuiCol.TitleBgCollapsed]     = V(0.05f, 0.07f, 0.04f);
+        c[(int)ImGuiCol.MenuBarBg]            = V(0.06f, 0.08f, 0.05f);
+        c[(int)ImGuiCol.ScrollbarBg]          = V4(0.06f, 0.08f, 0.05f, 0.5f);
+        c[(int)ImGuiCol.ScrollbarGrab]        = V(0.18f, 0.30f, 0.12f);
+        c[(int)ImGuiCol.ScrollbarGrabHovered] = V(0.25f, 0.42f, 0.18f);
+        c[(int)ImGuiCol.ScrollbarGrabActive]  = V(0.32f, 0.55f, 0.22f);
+        c[(int)ImGuiCol.FrameBg]              = V(0.12f, 0.16f, 0.08f);
+        c[(int)ImGuiCol.FrameBgHovered]       = V(0.16f, 0.22f, 0.10f);
+        c[(int)ImGuiCol.FrameBgActive]        = V(0.14f, 0.19f, 0.09f);
+        c[(int)ImGuiCol.Header]               = V4(0.15f, 0.35f, 0.10f, 0.75f);
+        c[(int)ImGuiCol.HeaderHovered]        = V4(0.20f, 0.45f, 0.14f, 0.80f);
+        c[(int)ImGuiCol.HeaderActive]         = V(0.18f, 0.40f, 0.12f);
+        c[(int)ImGuiCol.Tab]                  = V4(0.10f, 0.18f, 0.07f, 0.86f);
+        c[(int)ImGuiCol.TabHovered]           = V4(0.20f, 0.40f, 0.14f, 0.80f);
+        c[(int)ImGuiCol.TabSelected]          = V(0.15f, 0.32f, 0.10f);
+        c[(int)ImGuiCol.TabDimmed]            = V4(0.08f, 0.14f, 0.06f, 0.97f);
+        c[(int)ImGuiCol.TabDimmedSelected]    = V(0.12f, 0.22f, 0.08f);
+        c[(int)ImGuiCol.DockingPreview]       = V4(0.30f, 0.65f, 0.20f, 0.55f);
+        c[(int)ImGuiCol.DockingEmptyBg]       = V(0.06f, 0.08f, 0.05f);
+        c[(int)ImGuiCol.Button]               = V4(0.15f, 0.32f, 0.10f, 0.75f);
+        c[(int)ImGuiCol.ButtonHovered]        = V(0.22f, 0.45f, 0.16f);
+        c[(int)ImGuiCol.ButtonActive]         = V(0.12f, 0.28f, 0.08f);
+        c[(int)ImGuiCol.CheckMark]            = V(0.50f, 0.90f, 0.35f);
+        c[(int)ImGuiCol.SliderGrab]           = V(0.36f, 0.70f, 0.25f);
+        c[(int)ImGuiCol.SliderGrabActive]     = V(0.48f, 0.85f, 0.35f);
+        c[(int)ImGuiCol.Separator]            = V(0.18f, 0.24f, 0.12f);
+        c[(int)ImGuiCol.SeparatorHovered]     = V4(0.26f, 0.50f, 0.18f, 0.78f);
+        c[(int)ImGuiCol.SeparatorActive]      = V(0.30f, 0.58f, 0.20f);
+        c[(int)ImGuiCol.ResizeGrip]           = V4(0.22f, 0.48f, 0.16f, 0.22f);
+        c[(int)ImGuiCol.ResizeGripHovered]    = V4(0.30f, 0.60f, 0.22f, 0.67f);
+        c[(int)ImGuiCol.ResizeGripActive]     = V4(0.30f, 0.60f, 0.22f, 0.95f);
+        c[(int)ImGuiCol.Text]                 = V(0.90f, 0.95f, 0.88f);
+        c[(int)ImGuiCol.TextDisabled]         = V(0.44f, 0.50f, 0.40f);
+        c[(int)ImGuiCol.Border]               = V4(0.20f, 0.35f, 0.14f, 0.60f);
+    }
+
+    static Vector4 V(float r, float g, float b)           => new(r, g, b, 1f);
+    static Vector4 V4(float r, float g, float b, float a) => new(r, g, b, a);
+}

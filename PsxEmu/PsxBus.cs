@@ -21,6 +21,7 @@ unsafe class PsxBus
     readonly byte[] _scratch;
 
     public readonly PsxGpu Gpu;
+    public readonly PsxSpu Spu;
     public readonly PsxDma Dma;
     public readonly PsxCdRom CdRom;
     public MipsCpu? Cpu;
@@ -29,7 +30,6 @@ unsafe class PsxBus
     readonly uint[] _memCtrl = new uint[16]; // 0x1F801000-0x1F80103F
     uint _ramSize;                           // 0x1F801060
     uint _cacheCtrl;                         // 0xFFFE0130
-    readonly ushort[] _spuRegs = new ushort[256]; // 0x1F801C00-0x1F801FFF
     uint _mdecData, _mdecStatus = 0x8000_0000; // 0x1F801820-0x1F801824
 
     // ── Interrupt controller ────────────────────────────────────────────────
@@ -162,8 +162,9 @@ unsafe class PsxBus
         _scratchPtr = (byte*)_scratchH.AddrOfPinnedObject();
 
         Gpu = new PsxGpu();
+        Spu = new PsxSpu();
         CdRom = new PsxCdRom();
-        Dma = new PsxDma(this, Gpu, CdRom);
+        Dma = new PsxDma(this, Gpu, CdRom, Spu);
     }
 
     ~PsxBus()
@@ -171,6 +172,34 @@ unsafe class PsxBus
         if (_ramH.IsAllocated)     _ramH.Free();
         if (_biosH.IsAllocated)    _biosH.Free();
         if (_scratchH.IsAllocated) _scratchH.Free();
+    }
+
+    public void ResetState()
+    {
+        Array.Clear(Ram);
+        Array.Clear(_scratch);
+        IStat = 0;
+        IMask = 0;
+        Timer0 = Timer1 = Timer2 = 0;
+        Tim0Mode = Tim1Mode = Tim2Mode = 0;
+        Tim0Target = Tim1Target = Tim2Target = 0;
+        _joyRxData = 0xFF;
+        _joyCtrl = 0;
+        _joyMode = 0;
+        _joyBaud = 0x88;
+        _joyRxReady = false;
+        _joyAck = false;
+        _joyIrq = false;
+        _joyIrqCountdown = 0;
+        _joyStep = 0;
+        Dma.Reset();
+        CdRom.Reset();
+        Spu.Reset();
+        Array.Clear(_memCtrl);
+        _ramSize = 0;
+        _cacheCtrl = 0;
+        _mdecData = 0;
+        _mdecStatus = 0x8000_0000;
     }
 
     // ── Fast instruction fetch (used by CPU – bypasses full address decode) ──
@@ -286,7 +315,7 @@ unsafe class PsxBus
     ushort IoRead16(uint p)
     {
         if (p is >= 0x1F80_1C00 and <= 0x1F80_1FFF)
-            return _spuRegs[(p - 0x1F80_1C00) >> 1];
+            return Spu.Read(p);
         return p switch
         {
         0x1F80_1070 => (ushort)IStat,
@@ -320,10 +349,7 @@ unsafe class PsxBus
         if (p is >= 0x1F80_1080 and <= 0x1F80_10EF) return Dma.Read(p - 0x1F80_1080);
         if (p is >= 0x1F80_1000 and <= 0x1F80_103F) return _memCtrl[(p - 0x1F80_1000) >> 2];
         if (p is >= 0x1F80_1C00 and <= 0x1F80_1FFF)
-        {
-            int idx = (int)(p - 0x1F80_1C00) >> 1;
-            return (uint)(_spuRegs[idx] | (_spuRegs[idx + 1] << 16));
-        }
+            return (uint)(Spu.Read(p) | (Spu.Read(p + 2) << 16));
         return p switch
         {
             0x1F80_10F0 => Dma.DPCR,
@@ -370,7 +396,7 @@ unsafe class PsxBus
     void IoWrite16(uint p, ushort v)
     {
         if (p is >= 0x1F80_1800 and <= 0x1F80_1803) { CdRom.Write(p, (byte)v); return; }
-        if (p is >= 0x1F80_1C00 and <= 0x1F80_1FFF) { _spuRegs[(p - 0x1F80_1C00) >> 1] = v; return; }
+        if (p is >= 0x1F80_1C00 and <= 0x1F80_1FFF) { Spu.Write(p, v); return; }
         switch (p)
         {
             case 0x1F80_1040: JoyDataWrite((byte)v); break;
@@ -405,9 +431,8 @@ unsafe class PsxBus
         if (p is >= 0x1F80_1000 and <= 0x1F80_103F) { _memCtrl[(p - 0x1F80_1000) >> 2] = v; return; }
         if (p is >= 0x1F80_1C00 and <= 0x1F80_1FFF)
         {
-            int idx = (int)(p - 0x1F80_1C00) >> 1;
-            _spuRegs[idx] = (ushort)v;
-            if (idx + 1 < _spuRegs.Length) _spuRegs[idx + 1] = (ushort)(v >> 16);
+            Spu.Write(p, (ushort)v);
+            Spu.Write(p + 2, (ushort)(v >> 16));
             return;
         }
         switch (p)

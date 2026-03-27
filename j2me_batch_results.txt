@@ -1,0 +1,1018 @@
+Found 1126 JAR files in C:\Users\ashot\Downloads\pack mas 1000 juegos java Kevtech\pack mas 1000 juegos java Kevtech
+================================================================================
+  1916_Dogfight.jar ... OK (missing: 0 classes, 1 methods)
+  2005RealFootball.jar ... OK (missing: 0 classes, 1 methods)
+  2012_Apocalypse.jar ... OK
+  2020SpecialOps.jar ... OK (missing: 0 classes, 1 methods)
+  20q_lz3.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  240x320_megacityempirenewyork.jar ... OK (missing: 0 classes, 1 methods)
+  3D Dungeon Warrior.jar ... OK
+  3daliensho_pm1k3pc4.jar ... OK
+  3DGoldenWarrior.jar ... OK (missing: 0 classes, 1 methods)
+  3dpool.jar ... OK (missing: 0 classes, 3 methods)
+  3D_AMF_Xtreme_Bowling_163.jar ... FAIL: Java: java/lang/IllegalArgumentException
+  3D_Bimmer_Street_Racing_100.jar ... OK (missing: 0 classes, 2 methods)
+  3D_Golf_Pro_Contest_2_105.jar ... FAIL: Timeout (5s)
+  3D_PoolDreams_100.jar ... OK (missing: 0 classes, 1 methods)
+  3D_Racing_Fever_GT_103.jar ... FAIL: Unable to read beyond the end of the stream.
+  3d_rollercoaster_rush_240x320-88383.jar ... FAIL: Nullable object must have a value.
+  8BitGames.Colin.Mcrae.Rally.4.v1.0.0.NOKIA.J2MEv2.Retail-aSxPDA.jar ... OK (missing: 0 classes, 2 methods)
+  Abracadaball.jar ... FAIL: Index and count must refer to a location within the buffer. (Parameter 'bytes')
+  Absolute_Minesweeper.jar ... FAIL: Nullable object must have a value.
+  Absorbed.jar ... OK
+  Aces_races.jar ... OK
+  Actraiser.jar ... OK
+  Actua soccer_IE_2006.jar ... OK (missing: 0 classes, 1 methods)
+  Adidas-All-Star_Football.jar ... OK
+  Adidas.jar ... OK (missing: 0 classes, 3 methods)
+  Adidas1_Challenge.jar ... OK (missing: 0 classes, 3 methods)
+  AdventureIsland.jar ... OK (missing: 0 classes, 2 methods)
+  afterdarkunderthemoonlight.jar ... OK (missing: 0 classes, 1 methods)
+  After_Burner_II.jar ... OK
+  Agent_Down.jar ... OK (missing: 0 classes, 1 methods)
+  Agent_Hugo-Robot Rumble.jar ... OK
+  AgeOfEmpires2.jar ... FAIL: Source array was not long enough. Check the source index, length, and the array's lower bounds. (Parameter 'sourceArray')
+  AgeOfEmpires2_S40v3.jar ... FAIL: Source array was not long enough. Check the source index, length, and the array's lower bounds. (Parameter 'sourceArray')
+  Age_of_Empires2.jar ... FAIL: Source array was not long enough. Check the source index, length, and the array's lower bounds. (Parameter 'sourceArray')
+  age_of_empires_III_128x160Mis_Pbolas.jar ... FAIL: Java: java/lang/IllegalArgumentException
+  age_of_empires_ii_nez.jar ... FAIL: Timeout (5s)
+  Age_of_Heroes_VI.jar ... FAIL: Timeout (5s)
+  AH-6_Navy_Battle.jar ... OK (missing: 0 classes, 3 methods)
+  AiboMemories.jar ... OK (missing: 0 classes, 1 methods)
+  Airburster3D.jar ... OK
+  Aircraft_Gear.jar ... FAIL: Java: java/lang/AbstractMethodError
+  AirForceISaveTheCity.jar ... OK
+  Aladdin2.jar ... FAIL: Unable to read beyond the end of the stream.
+  Alice_in_wonderland.jar ... OK
+  Alien Quarantine (Espa├▒ol) (240x320) danoto89.jar ... OK
+  AlienAggression.jar ... OK (missing: 0 classes, 2 methods)
+  AlienXenocide.jar ... OK (missing: 0 classes, 4 methods)
+  alien_shooter_3d_240x320-90538.jar ... OK
+  Alien_Xenocide.jar ... OK (missing: 0 classes, 4 methods)
+  Alonso_2006.jar ... OK
+  AlphaWing-.jar ... OK (missing: 0 classes, 4 methods)
+  AlphaWing.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Alpha_Zone_100.jar ... OK
+  america_s_army_128x160.jar ... OK
+  AMFXtremeBowling.jar ... FAIL: Java: java/lang/IllegalArgumentException
+  Amigo_(tamagochi).jar ... OK (missing: 0 classes, 1 methods)
+  AncienEmpiresII.jar ... OK (missing: 0 classes, 3 methods)
+  AncientRuins4.jar ... OK (missing: 0 classes, 1 methods)
+  Ancient_Empires.jar ... OK (missing: 0 classes, 1 methods)
+  And1 Street Basketball (french 128x160).jar ... OK (missing: 0 classes, 1 methods)
+  Angrybird2.jar ... OK (missing: 0 classes, 4 methods)
+  angrybirds_jmosxcm4.jar ... OK (missing: 0 classes, 4 methods)
+  Angry_Birds.jar ... FAIL: Timeout (5s)
+  AnitoCotl.jar ... OK (missing: 1 classes, 0 methods)
+  Anno.jar ... FAIL: Nullable object must have a value.
+  Anno1503.jar ... FAIL: Nullable object must have a value.
+  AnnoCreateaNewWorld.jar ... OK
+  Aporkalypsepigsofdoom.jar ... OK
+  Aquababe.jar ... FAIL: length ('-1') must be a non-negative value. (Parameter 'length')
+Actual value was -1.
+  AquaLife.jar ... OK
+  ArcadeSideGolf.jar ... OK
+  AresII.jar ... OK (missing: 0 classes, 1 methods)
+  Arkanoid.jar ... OK (missing: 0 classes, 1 methods)
+  ArkanoidRevengeOfDoth.jar ... OK
+  ArkanoidRevengeOfDoth_S40v3.jar ... OK
+  ArmiesofWar.jar ... OK (missing: 0 classes, 1 methods)
+  ArmySports.jar ... OK
+  ArsenalClubFootball.jar ... OK
+  asphalt 3 3d.jar ... OK
+  Asphalt 6 Adrenaline (Espa├▒ol) (240x320) danoto89.jar ... OK
+  Asphalt Nitro.jar ... OK (missing: 0 classes, 1 methods)
+  ASPHALT.jar ... OK
+  asphalt3.jar ... FAIL: Timeout (5s)
+  Asphalt3StreetRules3D.jar ... OK
+  AsphaltUrbanGT2.jar ... OK
+  Assassins Creed 3 (Espa├▒ol) (240x320) danoto89.jar ... OK (missing: 0 classes, 1 methods)
+  Assassins Creed Revelations (Espa├▒ol) (240x320) danoto89.jar ... OK
+  Assembler.jar ... OK
+  AsterixRescueObelix.jar ... OK (missing: 0 classes, 1 methods)
+  Asterix_And_the_Vikings_s40v2.jar ... OK
+  Asteroids.jar ... OK
+  Astropop.jar ... OK
+  Astrosmash.jar ... OK
+  AtariLegendsVol2.jar ... FAIL: Nullable object must have a value.
+  AtariLegendsVol3.jar ... FAIL: Nullable object must have a value.
+  AtomicBetty.jar ... OK (missing: 0 classes, 2 methods)
+  AtomicHorseRacer.jar ... FAIL: Java: java/lang/AbstractMethodError
+  AtomicSkater.jar ... FAIL: Java: java/lang/AbstractMethodError
+  AtomicSpaceRocks.jar ... FAIL: Java: java/lang/AbstractMethodError
+  AtomicUnderground.jar ... FAIL: Java: java/lang/AbstractMethodError
+  ATVOffroadFury.jar ... OK (missing: 0 classes, 2 methods)
+  AutobahnRaserWorldChallenge.jar ... OK
+  Avatar (Espa├▒ol) (240x320) danoto89.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  avatar_s40v6_x2_01_4s1.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Avenue.jar ... FAIL: Java: java/lang/AbstractMethodError
+  AztecWarrior.jar ... OK (missing: 0 classes, 1 methods)
+  Backgammon.jar ... FAIL: Nullable object must have a value.
+  BaldursGate.jar ... FAIL: Timeout (5s)
+  Ballooney.jar ... OK
+  Balloonz.jar ... FAIL: Java: javax/microedition/rms/RecordStoreException
+  Balloon_Race.jar ... OK (missing: 0 classes, 7 methods)
+  BallRush2.jar ... OK
+  Banditogangsterito.jar ... OK
+  Banjo Kazooie Adventure.jar ... FAIL: Timeout (5s)
+  Banjo-Kazooie.jar ... OK
+  Banjokazooiemobile.jar ... FAIL: Timeout (5s)
+  BarryBite.jar ... OK
+  Baseball.jar ... OK (missing: 0 classes, 1 methods)
+  Baseball2009DerekJeter.jar ... FAIL: Index and count must refer to a location within the buffer. (Parameter 'bytes')
+  BassAssassin(pesca).jar ... OK (missing: 0 classes, 2 methods)
+  BassFishing.jar ... OK (missing: 0 classes, 2 methods)
+  Batman 3 El Caballero De La Noche Asciende (Espa├▒ol) (240x320) danoto89.jar ... OK (missing: 0 classes, 2 methods)
+  BatmanBegins.jar ... OK (missing: 0 classes, 1 methods)
+  BattleOfThePlanets.jar ... FAIL: Java: java/lang/AbstractMethodError
+  BeachPingPong3D.jar ... OK
+  BeachWars.jar ... OK
+  BenjyThePuppy3D.jar ... OK
+  Beowulf (Espa├▒ol) (240x320) danoto89.jar ... OK
+  beowulf_la_leyenda.jar ... OK
+  BeyBladeGRevolution.jar ... OK
+  Big2Garden2265.jar ... OK (missing: 0 classes, 3 methods)
+  BigBrotherGames.jar ... FAIL: Timeout (5s)
+  BigKahunaReef.jar ... OK
+  BigLebowskiBowling.jar ... OK (missing: 0 classes, 3 methods)
+  BikiniBeachParty.jar ... FAIL: Timeout (5s)
+  BikiniMachine.jar ... OK
+  BillsEggcellent.jar ... FAIL: Timeout (5s)
+  BillsEggcellentAdventure.jar ... FAIL: Timeout (5s)
+  BillyTheKid2.jar ... FAIL: Nullable object must have a value.
+  BimmerStreetRacing3D.jar ... OK (missing: 0 classes, 2 methods)
+  BlackHawkDown.jar ... OK (missing: 0 classes, 3 methods)
+  BlackJackHustler.jar ... OK
+  BlackMetal.jar ... OK (missing: 0 classes, 3 methods)
+  Blackshark.jar ... OK
+  BlackWidow.jar ... FAIL: Nullable object must have a value.
+  blade.jar ... OK
+  BladeTrinity.jar ... OK
+  BlindFury.jar ... OK
+  Block 3D.jar ... OK (missing: 0 classes, 3 methods)
+  Block'd.jar ... OK (missing: 0 classes, 2 methods)
+  Blockbreakerdelux2.jar ... OK
+  BlockBreakerDeluxe.jar ... OK
+  Blockmania.jar ... OK (missing: 0 classes, 1 methods)
+  BlockManiac.jar ... OK
+  Blocks.jar ... FAIL: Timeout (5s)
+  BMW1SeriesChallenge.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  BMWRacing.jar ... OK
+  Bob Esponja(square pants).jar ... OK (missing: 0 classes, 1 methods)
+  BobbyCarrot 3.jar ... OK (missing: 0 classes, 1 methods)
+  BocceWorldTour.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  boltlampard52__wng.jar ... OK (missing: 0 classes, 5 methods)
+  BombermanKart.jar ... OK
+  BombermanPanic.jar ... OK
+  BombermanPinBall.jar ... OK
+  BombermanPuzzle.jar ... OK (missing: 0 classes, 3 methods)
+  bombermans_71hlp22b_nmj_joc.jar ... OK
+  Bomberpilot.jar ... OK (missing: 0 classes, 2 methods)
+  BombSweeper.jar ... FAIL: Java: java/lang/AbstractMethodError
+  BonksReturn.jar ... OK
+  Boulder2.jar ... FAIL: Java: java/lang/AbstractMethodError
+  BoulderDashM.E.2.jar ... OK
+  BounceTales.jar ... OK
+  BourneUltimatum.jar ... OK
+  BOWLING.jar ... OK
+  BrainApple.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  BrainEnergy.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  BrainJuice.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  BrainOrange.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Breakout Bears.jar ... OK (missing: 0 classes, 2 methods)
+  Brickbre3D.jar ... FAIL: Timeout (5s)
+  Brik-Link.jar ... FAIL: Unable to read beyond the end of the stream.
+  BTBiplanes_s40v3.jar ... OK (missing: 0 classes, 2 methods)
+  BubbleBash2.jar ... OK
+  Bubblebobble.jar ... OK (missing: 0 classes, 1 methods)
+  Bubblet.jar ... OK
+  bubble_popper_deluxe_128x160_by_.jar ... OK
+  BudSpencerWildWest(poker).jar ... OK (missing: 0 classes, 1 methods)
+  BulldozerInc.jar ... OK
+  bullrunfev_q8ps3d5t.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Bunbuneeislandhop.jar ... FAIL: Timeout (5s)
+  BurningSkies.jar ... OK
+  CafeHangman(Ahorcado).jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Californiagoldrush.jar ... OK
+  CaliforniaSexyPoker.jar ... OK
+  CallOfDuty2.jar ... OK
+  CallOfDuty2045_Glortz.com.ar.jar ... FAIL: Timeout (5s)
+  CallOfTheLand_N6230i_N6270.jar ... OK
+  Call_Of_Duty_4_Modern_Warfare.jar ... OK
+  CamelotEpisode2.jar ... OK
+  Campaign.jar ... OK (missing: 0 classes, 2 methods)
+  CanalControl.jar ... OK (missing: 0 classes, 4 methods)
+  Cannon Rats (Espa├▒ol) (240x320) danoto89.jar ... OK
+  CannonFodder.jar ... OK (missing: 0 classes, 2 methods)
+  CaptainGalacticSuperSpacehero.jar ... OK
+  Carmageddon.jar ... OK (missing: 0 classes, 2 methods)
+  Carmageddon_S40v3.jar ... OK (missing: 0 classes, 2 methods)
+  Carnivalland.jar ... OK (missing: 0 classes, 1 methods)
+  carnival_land_0y8.jar ... OK (missing: 0 classes, 1 methods)
+  CarRacer2.jar ... OK (missing: 0 classes, 6 methods)
+  Cars.jar ... OK (missing: 0 classes, 2 methods)
+  Cars2.jar ... OK
+  CavemanX-mas.jar ... OK (missing: 0 classes, 4 methods)
+  CavemanX-mas1592.jar ... OK (missing: 0 classes, 4 methods)
+  ChessConquest(muy peque├▒o).jar ... OK
+  ChessMaster.jar ... OK
+  Chickeninvadersrevengeoftheyolk.jar ... OK
+  ChickswithBricks1.jar ... OK (missing: 0 classes, 4 methods)
+  Choo Choo Train Pipe.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  ChristmasPool.jar ... FAIL: Unable to read beyond the end of the stream.
+  ChristmasToyLand.jar ... OK
+  CityBloxx.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Civilization3.jar ... OK
+  Claustrophobia.jar ... OK
+  Cloudcommander3D.jar ... OK
+  ColinMcRae2005.jar ... OK
+  ColinMcRaeDiRT3D.jar ... OK (missing: 0 classes, 2 methods)
+  ColinMcRaeRally05.jar ... OK
+  ConstructoCombat3D.jar ... OK (missing: 0 classes, 8 methods)
+  contra_force_mul.jar ... OK (missing: 0 classes, 3 methods)
+  contra_japanese_7073.jar ... OK (missing: 0 classes, 1 methods)
+  CopMan3D.jar ... OK (missing: 0 classes, 1 methods)
+  Cops L.A Police (Espa├▒ol) (240x320) danoto89.jar ... OK
+  Cowboys & Aliens (Espa├▒ol) (240x320) danoto89.jar ... OK
+  Crash N Burn.jar ... OK
+  Crash Nitro Kart.jar ... OK
+  crasharena_128x160.jar ... FAIL: Timeout (5s)
+  crashbandi_tzob8oxv.jar ... OK
+  crashnitrokart.jar ... OK
+  CrashoftheTitans.jar ... OK (missing: 0 classes, 1 methods)
+  crashtwinsanity.jar ... OK
+  Crash_N_BurnTurbo.jar ... OK
+  crash_n_burn_turbo.jar ... OK
+  CrazyPong.jar ... OK
+  CristianoRonaldoUnderworldFootball.jar ... OK (missing: 1 classes, 2 methods)
+  Crosspix.jar ... OK
+  CSI El Juego Movil (Espa├▒ol) (240x320) danoto89.jar ... OK
+  CStrikemobile.jar ... OK (missing: 0 classes, 1 methods)
+  Cupid3D.jar ... OK
+  CyberBlood.jar ... OK
+  DagazEhwaz.jar ... OK
+  Danger Dash (Espa├▒ol) (240x320) danoto89.jar ... FAIL: Source array was not long enough. Check the source index, length, and the array's lower bounds. (Parameter 'sourceArray')
+  DarkEmperor2146.jar ... OK (missing: 0 classes, 1 methods)
+  DarkestFear.jar ... OK
+  DarkestFear2.jar ... OK
+  DarkestFear3Nightmare pipelucas2203.jar ... OK
+  Deep3D.jar ... OK
+  DeltaForce.jar ... OK (missing: 0 classes, 3 methods)
+  Desperado - Duel of Vengeance - Luchoxlavida.jar ... OK
+  DestroyAllHumans.jar ... OK (missing: 0 classes, 2 methods)
+  DestroyAllHumansCryptoDoesVegas.jar ... OK
+  Detonate.jar ... OK (missing: 0 classes, 2 methods)
+  Diamondrush.jar ... OK (missing: 0 classes, 3 methods)
+  Diamondtwister2(bejeweled).jar ... OK
+  diccionariocompletocastellano.jar ... OK
+  DictatorDefense.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  DinerDash 2.jar ... OK (missing: 0 classes, 2 methods)
+  Discworld-TheColourofMagic.jar ... OK
+  DogCity.jar ... OK
+  Dogz 2 (Espa├▒ol) (240x320) danoto89.jar ... OK
+  DominoesDeluxe.jar ... OK
+  Doodleiqchallenge.jar ... OK (missing: 0 classes, 1 methods)
+  DoodleJump.jar ... OK
+  Doom.jar ... OK (missing: 0 classes, 2 methods)
+  DoomRPG.jar ... OK (missing: 0 classes, 2 methods)
+  Doraemon.jar ... OK (missing: 0 classes, 1 methods)
+  double_dragon_nff_yv8.jar ... OK (missing: 0 classes, 1 methods)
+  Downtowndash.jar ... OK
+  DragonHunter.jar ... OK (missing: 0 classes, 2 methods)
+  DragonIsland.jar ... OK
+  Dragon_Island.jar ... OK
+  Drakengard.jar ... OK
+  DrFrankenstein.jar ... OK
+  Driver San Francisco (Espa├▒ol) (240x320) danoto89.jar ... OK
+  Driver3.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Ducati3DExtreme.jar ... FAIL: Java: java/io/IOException
+  DungeonStorm.jar ... OK
+  DungeonWarrior3D.jar ... OK
+  Duro De Matar 4.0 (Espa├▒ol) (240x320) danoto89.jar ... OK
+  Duro De Matar 5 Un Buen D├¡a Para Morir (Espa├▒ol) (240x320) danoto89.jar ... OK
+  DynamoKid.jar ... OK (missing: 0 classes, 3 methods)
+  E.T.TheExtraterrestrial.jar ... OK
+  Earthworm Jim (Espa├▒ol) (240x320) danoto89.jar ... OK
+  EA[1].Mobile.Medal.Of.Honor.Airborne.jar ... FAIL: Timeout (5s)
+  EggsvsWolf.jar ... FAIL: Operation did not complete successfully because the file contains a virus or potentially unwanted software. : 'C:\Users\ashot\Downloads\pack mas 1000 juegos java Kevtech\pack mas 1000 juegos java Kevtech\EggsvsWolf.jar'
+  ElChe.jar ... FAIL: Java: java/lang/AbstractMethodError
+  ElderScrollsIVOblivion.jar ... FAIL: Index and count must refer to a location within the buffer. (Parameter 'bytes')
+  Elektra.jar ... OK
+  Elkware'sSolitaire.jar ... FAIL: Nullable object must have a value.
+  Elkwares_Solitair.jar ... FAIL: Nullable object must have a value.
+  Elkwares_Solitair_S700_En.jar ... FAIL: Nullable object must have a value.
+  Elkware_Backgammon.jar ... FAIL: Nullable object must have a value.
+  EmpireEarth.jar ... FAIL: Timeout (5s)
+  eMSN_t.jar ... OK (missing: 0 classes, 1 methods)
+  EonDominoIslandPart2.jar ... FAIL: Unable to read beyond the end of the stream.
+  EonTheDragon2.jar ... FAIL: Timeout (5s)
+  Epos3D.jar ... OK (missing: 0 classes, 1 methods)
+  Erotic_Slot.jar ... OK (missing: 0 classes, 1 methods)
+  Eurofighter.jar ... OK
+  Extreme_Bowling3D.jar ... FAIL: Java: java/lang/IllegalArgumentException
+  F1Challenge.jar ... OK (missing: 0 classes, 5 methods)
+  FallingBlocks.jar ... FAIL: Timeout (5s)
+  FantasyWarriors2Evil.jar ... FAIL: Java: java/lang/AbstractMethodError
+  FantasyWarriors2Good.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Fast and Furious fugitive 3d.jar ... OK (missing: 0 classes, 1 methods)
+  FastAndFurious.jar ... FAIL: Java: java/lang/AbstractMethodError
+  FatalForce.jar ... FAIL: Java: java/lang/Exception
+  Fathammer Get Rich Or Die Tryin.jar ... OK
+  FatManAdventures(lode Runner).jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Ferrari GT 3 Woeld Track (Espa├▒ol) (240x320).jar ... FAIL: Arithmetic operation resulted in an overflow.
+  FIAworldrally.jar ... OK (missing: 0 classes, 1 methods)
+  Fifa Street II.jar ... OK
+  FIFA_Football_2005.jar ... OK (missing: 0 classes, 4 methods)
+  Fightality.jar ... OK
+  Fight_Night_Round_3.jar ... FAIL: Non-negative number required. (Parameter 'capacity')
+  First Operation Condition Zero.jar ... FAIL: Java: java/lang/AbstractMethodError
+  FishingHook2.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  FishingOffTheHook.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  FiveBalls.jar ... OK
+  Fiver.jar ... OK
+  Flatout3D.jar ... OK (missing: 0 classes, 1 methods)
+  FootballManager.jar ... OK (missing: 0 classes, 1 methods)
+  FootballTrivia.jar ... OK
+  Forsters.jar ... OK
+  Forsters_Home_Balloon Bonanza.jar ... OK
+  FotoQuestFishing.jar ... FAIL: Java: java/lang/AbstractMethodError
+  FreeCell.jar ... OK (missing: 0 classes, 1 methods)
+  Freeflight.jar ... OK (missing: 0 classes, 10 methods)
+  Freestyle Moto-X II by 0x.jar ... OK
+  FreestyleMotocross.jar ... FAIL: Java: java/lang/AbstractMethodError
+  FreestyleMotoXII.jar ... OK
+  Freestyle_Moto-X_II_N6230i_N6270.jar ... OK (missing: 0 classes, 1 methods)
+  FruitFactory2.jar ... OK
+  FruitFactory2_S40v3.jar ... OK
+  FruitMachine2.jar ... FAIL: Unable to read beyond the end of the stream.
+  Fullmetalfortress.jar ... OK (missing: 0 classes, 6 methods)
+  FunkyMonkey.jar ... FAIL: Nullable object must have a value.
+  Furia De Tiranes 2 (Espa├▒ol) (240x320) danoto89.jar ... OK
+  G-Force.jar ... OK
+  GalleonDawn.jar ... OK
+  GameofLife.jar ... FAIL: Java: java/lang/Exception
+  Gangland.jar ... FAIL: Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection. (Parameter 'count')
+  Gangstar City (Espa├▒ol) (240x320) danoto89.jar ... OK (missing: 0 classes, 2 methods)
+  Gangstar_Crime City castellano si k310.jar ... OK
+  Garfield2.jar ... OK
+  GemJam.jar ... FAIL: Nullable object must have a value.
+  Ghost Recon Future Soldier (Espa├▒ol) (240x320) danoto89.jar ... OK
+  GhostForce.jar ... OK
+  Ghosts_n_Goblins.jar ... OK
+  Ghost_Recon_2_SE_128x160.jar ... OK
+  GianaSistr.jar ... OK (missing: 0 classes, 3 methods)
+  Girls_Gamble.jar ... OK (missing: 0 classes, 5 methods)
+  Goldenwarrior3D.jar ... OK (missing: 0 classes, 1 methods)
+  GoldHunter1599.jar ... OK (missing: 2 classes, 1 methods)
+  GoldMiner.jar ... OK (missing: 0 classes, 3 methods)
+  GoldMiner1600.jar ... OK (missing: 0 classes, 3 methods)
+  GolfClub.jar ... OK (missing: 0 classes, 1 methods)
+  golfpc2_k700_kryak.jar ... FAIL: Timeout (5s)
+  GolfProContest2.jar ... FAIL: Timeout (5s)
+  Gomoku34155.jar ... OK
+  Governator.jar ... OK
+  Gravity Defied 3.jar ... OK
+  Gravitysurf.jar ... FAIL: Index was outside the bounds of the array.
+  Green Farm Mobile (Espa├▒ol) (240x320) danoto89.jar ... OK
+  GremlinsSpellforce.jar ... OK
+  GT Racing 2 (Espa├▒ol) (240x320) danoto89.jar ... FAIL: Index and count must refer to a location within the buffer. (Parameter 'bytes')
+  GTRacing.jar ... OK
+  Guitar Hero III [240x320].jar ... FAIL: Timeout (5s)
+  Guitar Legend [240x320].jar ... FAIL: Java: java/lang/StackOverflowError
+  Guitar Rock Tour [240x320].jar ... FAIL: Timeout (5s)
+  GuitarHero5moremusic.jar ... OK (missing: 0 classes, 1 methods)
+  GuitarHeroIII.jar ... FAIL: Timeout (5s)
+  GuitarHeroworldtour-backstagepass.jar ... OK (missing: 0 classes, 1 methods)
+  Handyluder.jar ... OK
+  HappyTreeFriends-SpinFun.jar ... FAIL: Timeout (5s)
+  HappyTreeFriends.jar ... FAIL: Timeout (5s)
+  HardRockCasino.jar ... OK (missing: 0 classes, 1 methods)
+  HarryPotter-OrderPhoenix.jar ... OK
+  HarryPotterMasteringMagic.jar ... OK
+  Harvest-Moon 1 y 2.jar ... OK
+  Hawaiian_Beach_Volley.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Heli Strike 3D.jar ... FAIL: Nullable object must have a value.
+  HellRider.jar ... OK
+  herosoftangdynasty.jar ... OK (missing: 0 classes, 1 methods)
+  HighSpeed3D.jar ... OK
+  HolyWars.jar ... OK (missing: 0 classes, 1 methods)
+  Hombres De Negro 3 (Espa├▒ol) (240x320) danoto89.jar ... OK
+  HoneycombBeat.jar ... OK
+  Hoovies.jar ... OK (missing: 0 classes, 1 methods)
+  house_the_mobile_game__c4c.jar ... OK (missing: 0 classes, 2 methods)
+  HugoEvilMirror.jar ... OK
+  HugoEvilMirror1.jar ... OK
+  HugoEvilMirror3.jar ... OK
+  HummerJumpandrace3D.jar ... FAIL: Java: java/lang/RuntimeException
+  HungryWorming.jar ... OK (missing: 0 classes, 4 methods)
+  Huntingmania.jar ... FAIL: Timeout (5s)
+  IceAge2.jar ... OK (missing: 0 classes, 1 methods)
+  IndianaJonesIV.jar ... OK
+  Indy.jar ... OK (missing: 0 classes, 22 methods)
+  IRobot.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Iron-Man 3 (Espa├▒ol) (240x320) danoto89.jar ... OK
+  ISHOOT .jar ... OK
+  I_Robot.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Jamdat_Sports_NBA_2005.jar ... FAIL: Timeout (5s)
+  jaws-by-serruchin_powers.jar ... FAIL: Timeout (5s)
+  Jaws.jar ... FAIL: Cannot access a closed Stream.
+  JetSetRacing3D.jar ... FAIL: Unable to read beyond the end of the stream.
+  JetSetWilly.jar ... OK (missing: 0 classes, 1 methods)
+  JewelQ.jar ... FAIL: Unable to read beyond the end of the stream.
+  JewelQuest_N6230i_N6270.jar ... FAIL: Source array was not long enough. Check the source index, length, and the array's lower bounds. (Parameter 'sourceArray')
+  Jfog_(juego_quitar_niebla_a_imagenes).jar ... OK
+  Jimmy.jar ... OK (missing: 0 classes, 6 methods)
+  JohnnyCrash.jar ... FAIL: Java: java/lang/AbstractMethodError
+  JohnnyCrashDoesTexas.jar ... FAIL: Java: java/lang/AbstractMethodError
+  JohnnyCrash_S40v3.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Jurassic Park (Espa├▒ol) (240x320) danoto89.jar ... OK
+  JurassicPark(2005).jar ... OK
+  JurassicPark(2010).jar ... OK
+  JurassicPark.jar ... OK
+  JWaquarium.jar ... FAIL: Unable to read beyond the end of the stream.
+  KamikazeRobots.jar ... FAIL: Nullable object must have a value.
+  KENKEN.JAR ... FAIL: Java: java/lang/AbstractMethodError
+  KingdomOfHeaven.jar ... FAIL: Unable to read beyond the end of the stream.
+  Kingdoms & Lords (Espa├▒ol) (240x320) danoto89.jar ... OK
+  KingKong.jar ... OK
+  King_Of_Fighters.jar ... FAIL: Nullable object must have a value.
+  King_Of_Fighters_M2_K750.jar ... FAIL: Nullable object must have a value.
+  kirby_normal_adventure.jar ... OK (missing: 0 classes, 1 methods)
+  Kojak-Detective_Puzzles.jar ... OK
+  KrishCricketChallange.jar ... OK
+  KungFuPanda2.jar ... OK (missing: 0 classes, 1 methods)
+  La Era De Hielo 4 La Formacion De Los Continentes (Espa├▒ol) (240x320) danoto89.jar ... OK (missing: 0 classes, 3 methods)
+  LarrySexyPinball.jar ... OK
+  LastExam.jar ... OK
+  LA_Rush.jar ... FAIL: Timeout (5s)
+  LegionsOfRome.jar ... OK
+  LegoRacers.jar ... OK (missing: 0 classes, 1 methods)
+  LEGOWorldSoccer.jar ... FAIL: Timeout (5s)
+  LeilaniDowdingSexyGolf.jar ... OK (missing: 0 classes, 2 methods)
+  lemmings.jar ... OK
+  LemmingsReturn.jar ... OK
+  LemonadeTycoon.jar ... OK
+  Lethal_Mission.jar ... OK
+  Letsgobowling.jar ... OK
+  Liftboy.jar ... OK (missing: 0 classes, 2 methods)
+  Lines.jar ... OK
+  LodeRunner.jar ... OK
+  LuxDropsofbeauty.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Madagascar.jar ... OK (missing: 0 classes, 4 methods)
+  Mafia S40.jar ... OK (missing: 0 classes, 5 methods)
+  MafiaWars3.jar ... FAIL: Nullable object must have a value.
+  Magic Dance Floor (s60).jar ... OK
+  Magical Mahjong.jar ... FAIL: Java: java/lang/AbstractMethodError
+  MagicalHammer.jar ... OK (missing: 0 classes, 1 methods)
+  MagicMatch.jar ... OK
+  MajorPain.jar ... OK
+  Manapack02.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  MarbleMatrix3D.jar ... OK (missing: 0 classes, 2 methods)
+  Marble_Madness_1501.jar ... FAIL: Timeout (5s)
+  Mario KART.jar ... OK
+  Mariokart.jar ... OK
+  MarioKartMovil.jar ... OK
+  Maya-TemplesOfSecrets.jar ... OK (missing: 0 classes, 1 methods)
+  MC_Martha.jar ... FAIL: Timeout (5s)
+  MechaFighter(South Park).jar ... FAIL: Java: java/lang/AbstractMethodError
+  Mechanics.jar ... OK (missing: 0 classes, 6 methods)
+  MedalofHonor.jar ... OK
+  Medved.jar ... OK
+  Megabloksbuilder.jar ... OK (missing: 0 classes, 3 methods)
+  MegaTowerAssault.jar ... OK
+  Men_in_Black.jar ... OK
+  Mephisto.jar ... FAIL: Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection. (Parameter 'count')
+  MephistoChess.jar ... FAIL: Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection. (Parameter 'count')
+  MetalCommando.jar ... OK (missing: 0 classes, 2 methods)
+  MetalRacersQuadBikes.jar ... OK (missing: 0 classes, 2 methods)
+  MetalRacersQuadBikes_S40v3.jar ... OK (missing: 0 classes, 2 methods)
+  MetalSlugMobileImpact.jar ... FAIL: Nullable object must have a value.
+  MetalSlugMobileImpact_N6270.jar ... FAIL: Nullable object must have a value.
+  MetalSlugMobileImpact_S40v3.jar ... FAIL: Nullable object must have a value.
+  MetalSmashPinball.jar ... OK
+  MetalSmashPinballRUS_S40v2.jar ... OK
+  Metal_Racers_Quad_Bikes.jar ... OK (missing: 0 classes, 2 methods)
+  metal_slug_mi_epk.jar ... FAIL: Nullable object must have a value.
+  Metal_Slug_MI_K750.jar ... FAIL: Nullable object must have a value.
+  MiamiVice.jar ... OK
+  MicroCounterStrike.jar ... OK
+  Midnight Pool.jar ... FAIL: End of Central Directory record could not be found.
+  MidnightBowling.jar ... OK
+  MidnightPool.jar ... FAIL: Timeout (5s)
+  MidtownMadness3_N6230i.jar ... OK (missing: 0 classes, 1 methods)
+  MightAndMagic.jar ... OK
+  MineSweeper.jar ... OK (missing: 0 classes, 1 methods)
+  Minigolf (french 128x160).jar ... FAIL: startIndex cannot be larger than length of string. (Parameter 'startIndex')
+  Minigolf.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Minigolf99holes.jar ... FAIL: Nullable object must have a value.
+  MinigolfCastles.jar ... FAIL: Unable to read beyond the end of the stream.
+  MiniGolfCastles3D.jar ... FAIL: Java: java/lang/AbstractMethodError
+  MinigolfCastles_K700.jar ... FAIL: Unable to read beyond the end of the stream.
+  MiniGolfCastles_S40v3.jar ... FAIL: Java: java/lang/AbstractMethodError
+  MiniGolfMagic.jar ... OK
+  Mission impossible 3.jar ... OK
+  Mission Impossible III (game loft).jar ... OK
+  missionimp_bqu476xn.jar ... OK
+  mission_impossible_3_kma.jar ... OK
+  MobiChess.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Mobidogs (english).jar ... OK
+  MobileGP2.jar ... FAIL: Timeout (5s)
+  MobilePetDog.jar ... OK (missing: 0 classes, 2 methods)
+  MoneyBeatsEvil.jar ... OK
+  MonkeyBallMinigolf.jar ... FAIL: Nullable object must have a value.
+  MonopolyTycoon.jar ... OK
+  monopoly_classic_240798.jar ... OK
+  monopoly_classic_bon_241707.jar ... OK
+  MonsterPuzzle.jar ... OK
+  MoorhenKartRacer.jar ... OK
+  Moorhuhn_Jump'n'Run.jar ... OK (missing: 0 classes, 1 methods)
+  MOTO_RACING_FEVER_3D_N6230i_N6270.jar ... FAIL: Timeout (5s)
+  mr_and_mrs_smith.jar ... OK (missing: 0 classes, 3 methods)
+  MSharapova.jar ... OK
+  msword_ejx.jar ... OK (missing: 0 classes, 2 methods)
+  Musketeer.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  MX_Vs_ATV_Untamed.jar ... OK
+  mylittleci_el75r6s1.jar ... OK (missing: 0 classes, 1 methods)
+  mylittlefa_6hbllczt_rbr.jar ... OK (missing: 0 classes, 1 methods)
+  Mystic_Ways_3D.jar ... OK (missing: 0 classes, 1 methods)
+  m_video_3gp_mp4__ewt.jar ... FAIL: Timeout (5s)
+  nagesh_player_3_1114_qou.jar ... OK (missing: 0 classes, 4 methods)
+  NAIL_-_3D_Combat_100.jar ... OK
+  NarniaChess.jar ... OK (missing: 0 classes, 1 methods)
+  Narnia_Chess.jar ... OK (missing: 0 classes, 1 methods)
+  NateAdamsFMX.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Nate_Adams_Freestyle_Motocross.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Naval_battle.jar ... OK
+  Need for Speed Most Wanted.jar ... FAIL: Timeout (5s)
+  NeedForSpeedCarbon.jar ... OK
+  NeedForSpeedProStreet.jar ... FAIL: Timeout (5s)
+  NeedForSpeedUndercover.jar ... FAIL: Timeout (5s)
+  NeedForSpeedUnderground2.jar ... FAIL: Timeout (5s)
+  Need_For_Speed_-_Pro_Street.jar ... FAIL: Timeout (5s)
+  Need_For_Speed_Hot_Porsuit.jar ... FAIL: Timeout (5s)
+  Need_For_Speed_The_Run.jar ... FAIL: Nullable object must have a value.
+  NHL_5_ON_5_2007.jar ... OK (missing: 0 classes, 1 methods)
+  NightClubEmpire.jar ... FAIL: Unable to read beyond the end of the stream.
+  NightClubFever.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  NightmareBeforeChristmas.jar ... OK
+  NinjaRun.jar ... OK (missing: 0 classes, 2 methods)
+  NitroStreetRacing2.jar ... OK
+  NitroStreetRacing_s40v6-C3-00.jar ... OK
+  NRL2006_N6270.jar ... OK (missing: 0 classes, 2 methods)
+  NRL_Field_Goal_2006_N6270.jar ... OK (missing: 0 classes, 2 methods)
+  NRL_Super_Pass_2006_N6270.jar ... OK (missing: 0 classes, 2 methods)
+  NuSpace.jar ... OK (missing: 0 classes, 4 methods)
+  NYNights.jar ... OK
+  Oceans12_103.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Offroaddirtmotocross.jar ... OK
+  Oktoberfest 128x128.jar ... OK
+  Oldsnake.jar ... FAIL: Timeout (5s)
+  onlinepool_K700.jar ... OK
+  OpalQuest_EN_N6270.jar ... OK
+  operation.jar ... OK
+  Pac-ManChampionshipEdition.jar ... FAIL: Nullable object must have a value.
+  Pacman.jar ... OK (missing: 0 classes, 1 methods)
+  Paintball_Eng.jar ... FAIL: Timeout (5s)
+  Pamela_Anderson.jar ... FAIL: Nullable object must have a value.
+  Pang.jar ... OK
+  PaparazziSuperstar.jar ... OK (missing: 0 classes, 4 methods)
+  Parachute_Panic.jar ... OK (missing: 0 classes, 1 methods)
+  Parco_Giochi(Parque_de_Diversiones).jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Party_Island_Solitaire.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  PDS LTD Kill The Dean.jar ... OK (missing: 0 classes, 1 methods)
+  Pearl_harbor_sky_conquerors3D.jar ... FAIL: Java: java/io/EOFException
+  Peg_Solitaire_k750.jar ... OK
+  PES2008.jar ... FAIL: Timeout (5s)
+  PES2011.jar ... OK
+  PES_2008.jar ... FAIL: Timeout (5s)
+  PhineasandFerb.jar ... OK
+  Pic_to_play_plus_(reconocer_dibujos).jar ... OK
+  Pinball Monster.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Pinball.jar ... OK
+  Pioo.jar ... FAIL: Timeout (5s)
+  PiratesoftheCaribbean2.jar ... FAIL: Unable to read beyond the end of the stream.
+  Pirates_of_the_Caribbean3.jar ... OK
+  PitfallCaves.jar ... OK (missing: 0 classes, 3 methods)
+  PitfallGlacier.jar ... OK (missing: 0 classes, 1 methods)
+  PLAN.JAR ... OK (missing: 0 classes, 1 methods)
+  PlanetJam.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Planetriders.jar ... FAIL: Nullable object must have a value.
+  Planet_51_Behind_the_New_Wheel.jar ... OK
+  Platinum Solitaire.jar ... FAIL: End of Central Directory record could not be found.
+  Platinum Sudoku S403.jar ... OK
+  PlaymanWorldsoccer_2D_EN_N6270.jar ... OK (missing: 0 classes, 1 methods)
+  Plumber.jar ... OK
+  Pman.jar ... OK (missing: 0 classes, 3 methods)
+  PMGA_Minigolf_100.jar ... FAIL: Java: java/lang/AbstractMethodError
+  pokemon_cristal_bgm.jar ... FAIL: Timeout (5s)
+  pokemon_oro_s1z.jar ... FAIL: Timeout (5s)
+  Poppin_Panda.jar ... OK
+  POPSOT.jar ... OK
+  POPWarriorWithin.jar ... OK
+  Powerball_Arcade_W900.jar ... OK (missing: 0 classes, 10 methods)
+  PowerRangersMysticForce.jar ... OK
+  PrehistoricFunPark.jar ... OK
+  Prince Of Persia - 3 - Worrior Within.jar ... OK
+  Prince Of Persia 3_ Two Thrones.jar ... OK
+  Prince of Persia Warrior Within.jar ... OK
+  PrinceofEgypt2.jar ... OK (missing: 2 classes, 0 methods)
+  Prince_Caspian(Narnia).jar ... OK
+  Prince_of_Persia_4.jar ... OK (missing: 0 classes, 3 methods)
+  Prince_of_Persia_the_Two_Thrones_S700.jar ... FAIL: Timeout (5s)
+  PrismLightTheWay.jar ... OK
+  PrisonBreak.jar ... OK
+  PrisonTycoon.jar ... OK
+  Privateers.jar ... OK (missing: 0 classes, 3 methods)
+  ProjectGothamracing3D.jar ... OK
+  Project_GothamRacing2D.jar ... OK
+  project_gotham_racing_english.jar ... OK
+  Pub Darts.jar ... FAIL: Timeout (5s)
+  Pub Pool.jar ... OK
+  PubPool.jar ... OK
+  PuCZlle.jar ... OK
+  Pure.jar ... OK
+  PursuitSquad_Z1010_EN.jar ... OK (missing: 0 classes, 1 methods)
+  PuzzleBobble.jar ... OK (missing: 0 classes, 1 methods)
+  PuzzleMania2.jar ... OK
+  PuzzleMania2_S40v3.jar ... OK
+  PuzzleQuestWarlords.jar ... OK
+  Puzzlewarriors.jar ... FAIL: Nullable object must have a value.
+  Puzzle_Bobble.jar ... OK (missing: 0 classes, 2 methods)
+  PuzzlMania2.jar ... OK
+  pyfrk_e61_todoparatucelulard_ig6.jar ... OK
+  QuadraPop.jar ... FAIL: Timeout (5s)
+  Quarks2.jar ... FAIL: Timeout (5s)
+  Quest For Alliance 2.jar ... OK
+  R.U.S.H.jar ... OK
+  R6VEGAS_SE_128x160.jar ... OK
+  Raceagainsttime.jar ... OK (missing: 0 classes, 1 methods)
+  RaceDriverGrid.jar ... OK (missing: 0 classes, 4 methods)
+  Racing Fever Gt 3D N6270.jar ... FAIL: Unable to read beyond the end of the stream.
+  Racing Fever GT 3D.jar ... FAIL: Unable to read beyond the end of the stream.
+  RacingFeverGT.jar ... FAIL: Unable to read beyond the end of the stream.
+  RagingThunder.jar ... FAIL: Timeout (5s)
+  RainbowSix3.jar ... OK
+  RainbowSixLockDown.jar ... OK
+  Rally Evolution 3D.jar ... OK (missing: 0 classes, 1 methods)
+  rally3d6280.jar ... OK (missing: 0 classes, 25 methods)
+  RallyProContest.jar ... OK (missing: 0 classes, 1 methods)
+  RallyProContest3D.jar ... OK (missing: 0 classes, 1 methods)
+  RamboForever.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  RapidActionForce.jar ... OK
+  Rapidos y Furiosos 6 (Espa├▒ol) (240x320) danoto89.jar ... OK
+  RatchetAndClank.jar ... FAIL: Timeout (5s)
+  RatchetClank_K700.jar ... OK (missing: 0 classes, 2 methods)
+  RaupeAb.jar ... OK (missing: 0 classes, 3 methods)
+  Rayman3.jar ... OK (missing: 0 classes, 1 methods)
+  Real Football 2008 3D.jar ... OK (missing: 0 classes, 2 methods)
+  RealBowling.jar ... OK
+  RedBullAirRace.jar ... FAIL: Java: java/io/IOException
+  ResidentEvil-TheMissions.jar ... OK
+  Residentevil.jar ... OK (missing: 0 classes, 9 methods)
+  ResidentEvilConfidentialReport4.jar ... OK
+  Resident_Evil_Confidential_Report_File_1.jar ... OK
+  Reversi.jar ... OK
+  Reversi2264.jar ... OK
+  Revival.jar ... OK
+  Riseofantares.jar ... OK (missing: 0 classes, 4 methods)
+  riverriders.jar ... FAIL: Timeout (5s)
+  Robobouncer.jar ... FAIL: Java: java/io/IOException
+  RoboDef.jar ... FAIL: Index was outside the bounds of the array.
+  RobogearBattle.jar ... OK
+  Rock'n_Roll.jar ... OK
+  RockCityEmpire.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Rockin'Stone.jar ... FAIL: Unable to read beyond the end of the stream.
+  RodentPanic.jar ... OK
+  Roger.jar ... OK
+  Rolandgarros.jar ... FAIL: Destination array was not long enough. Check the destination index, length, and the array's lower bounds. (Parameter 'destinationArray')
+  RollARound.jar ... OK
+  Rollerball.jar ... OK (missing: 0 classes, 3 methods)
+  Ronny_O'Sullivan_Snooker.jar ... FAIL: Timeout (5s)
+  Rubik's Heart2Heart_133.jar ... OK (missing: 0 classes, 2 methods)
+  Saints_Row2.jar ... OK
+  SameGame2.jar ... FAIL: Timeout (5s)
+  SamuraiJackSamuraiShowdown.jar ... OK
+  Santa's_Tower_Bloxx.jar ... FAIL: Unable to read beyond the end of the stream.
+  Sas.jar ... OK (missing: 0 classes, 2 methods)
+  Sas_S40v3.jar ... OK (missing: 0 classes, 1 methods)
+  sc3.jar ... OK
+  Scarface-the_Rise_of_Tony_Montana.jar ... OK
+  Scarlottis Mafia Wars 2.jar ... FAIL: Nullable object must have a value.
+  ScarlottisMafiaWars2.jar ... FAIL: Nullable object must have a value.
+  Scarlottis_(Mafia_Wars_2).jar ... FAIL: Nullable object must have a value.
+  Scooby-Doo2DarkDungeons.jar ... OK
+  ScottDixon.jar ... FAIL: Timeout (5s)
+  ScottDixonRacing.jar ... FAIL: Timeout (5s)
+  SCPT.jar ... OK
+  Sea.jar ... OK
+  SeaHunter.jar ... OK (missing: 2 classes, 1 methods)
+  Sega_puzzle_pack_blue_(2_in_1).jar ... FAIL: Index and count must refer to a location within the buffer. (Parameter 'bytes')
+  Serenity Renegades.jar ... OK
+  SerenitySenegades.jar ... OK
+  SexyPinball.jar ... OK
+  Sexypoker2006.jar ... FAIL: Timeout (5s)
+  SexyPokerManga.jar ... FAIL: Timeout (5s)
+  SexyPokerTopModels.jar ... OK
+  Shadow.jar ... FAIL: Timeout (5s)
+  Shadowalker.jar ... FAIL: Timeout (5s)
+  Shadow_Zone_CNA.jar ... OK
+  Shaggy_GB_(and_the_ghost_blocks).jar ... OK
+  ShamegameAlyson.jar ... OK (missing: 0 classes, 2 methods)
+  Sharapova.jar ... OK
+  Sherlock_Holmes.jar ... FAIL: Timeout (5s)
+  ShiradsForge.jar ... OK (missing: 0 classes, 1 methods)
+  Shooter.jar ... OK
+  Shoot_A_Delic_K750.jar ... FAIL: Timeout (5s)
+  shrink2.jar ... FAIL: Index was outside the bounds of the array.
+  ShurikenStorm.jar ... OK
+  SiberianStrike.jar ... OK (missing: 0 classes, 2 methods)
+  sid_meier_s_civilization_v_mobil.jar ... OK
+  Silent_Hill_1.jar ... OK
+  Silent_Hill_2.jar ... OK
+  Sim Town.jar ... FAIL: Java: java/lang/AbstractMethodError
+  SimCityM_(Metropolis).jar ... OK (missing: 0 classes, 1 methods)
+  SimFishing.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Simon.jar ... OK (missing: 0 classes, 2 methods)
+  SimonSays.jar ... OK
+  Sims2.jar ... OK (missing: 0 classes, 1 methods)
+  Sims_2Mobile.jar ... OK (missing: 0 classes, 1 methods)
+  Sim_Fishing.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Sketcher.jar ... OK
+  Ski.jar ... OK
+  SkiJump.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Skipping_Stone_k750.jar ... FAIL: Timeout (5s)
+  SKYDIVER.JAR ... FAIL: No MIDlet-1
+  Slam Street 3D_N6270.jar ... OK
+  Slide_A_Lama_Deluxe(puzzle).jar ... FAIL: Java: java/lang/Exception
+  Slot_Racers.jar ... OK
+  SM2.jar ... OK (missing: 0 classes, 1 methods)
+  SmashDizzy.jar ... OK (missing: 0 classes, 3 methods)
+  Smash_Kart_Racing.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Snake.jar ... OK (missing: 0 classes, 7 methods)
+  Snake2.jar ... OK
+  Snakes_on_a_Planet.jar ... FAIL: Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection. (Parameter 'count')
+  Snake_Evolution.jar ... FAIL: Index was outside the bounds of the array.
+  Snake_III.jar ... FAIL: Timeout (5s)
+  snake_iii_155969.jar ... FAIL: Timeout (5s)
+  Snake_reloaded.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Snood.jar ... OK
+  Snood_Blaster.jar ... OK
+  Snowboarding_X_(ESPN_X_Games).jar ... OK
+  soccer.jar ... OK
+  SOCOM_US_Navy_SEALs_1546.jar ... OK
+  Sokoban.jar ... FAIL: Timeout (5s)
+  Sokoban1609.jar ... FAIL: Timeout (5s)
+  Solitair.jar ... FAIL: Nullable object must have a value.
+  Solitaire AR.jar ... OK
+  Solitaire v1.23 (gameloft platinum).jar ... OK
+  Solitaire.jar ... OK (missing: 0 classes, 2 methods)
+  Solitaire.v1.0.6-XiMpDA.jar ... OK
+  Solitare.jar ... FAIL: Timeout (5s)
+  Sonic The Hedgehog P.jar ... FAIL: End of Central Directory record could not be found.
+  Sonic1.jar ... OK (missing: 0 classes, 4 methods)
+  Sonic_at_the_olympic_games.jar ... FAIL: Timeout (5s)
+  Sonic_Jump.jar ... FAIL: Timeout (5s)
+  Sonic_the_Hedgehog1.jar ... OK (missing: 0 classes, 1 methods)
+  Sonic_the_Hedgehog2.jar ... OK (missing: 0 classes, 2 methods)
+  Sonic_the_HedgehogGolf.jar ... OK
+  Southpark_double_trouble.jar ... OK
+  South_Park.jar ... FAIL: Unable to read beyond the end of the stream.
+  South_ParkImaginationland.jar ... OK
+  Space Racer.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  SpaceBalls.jar ... FAIL: Timeout (5s)
+  Spacefighter.jar ... OK
+  SpaceImpactIII1.jar ... OK (missing: 0 classes, 3 methods)
+  SpaceRacer.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  SpaceWarrior.jar ... OK
+  Space_racer.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Spectrobes.jar ... OK
+  SpeedAddictUnderground2.jar ... OK
+  SpeedBall.jar ... FAIL: Timeout (5s)
+  SpeedChaser3D.jar ... OK
+  Speed_spirit3D.jar ... OK (missing: 0 classes, 5 methods)
+  Sphinx.jar ... FAIL: Timeout (5s)
+  Spiderman.jar ... OK
+  SpiderMan_en_k600_k700_k750_s600.jar ... OK
+  Spiderman_Toxic_City.jar ... OK
+  Spiderman_Webslinger.jar ... FAIL: Timeout (5s)
+  Spiderwick_Chronicles.jar ... FAIL: Nullable object must have a value.
+  SPIDER_MAN2.JAR ... OK
+  SpinFun.jar ... FAIL: Timeout (5s)
+  Splashdown.jar ... OK
+  Splatterhouse.jar ... OK (missing: 0 classes, 2 methods)
+  SplinterCell2ExtendedOps.jar ... OK
+  Sponge_Bob_(Fotoparade).jar ... FAIL: Timeout (5s)
+  Spring_break_fever.jar ... FAIL: Java: java/lang/StackOverflowError
+  SpruceBlocks.jar ... OK
+  SpruceCheckers06.jar ... OK
+  SpruceChess.jar ... OK
+  SpruceMan.jar ... OK
+  SpruceShooter.jar ... OK
+  Spyro_Eternal_Night.jar ... OK
+  Spyro_Ripto_Quest.jar ... FAIL: Timeout (5s)
+  Stage_Dive_(Yetisports_Special).jar ... FAIL: Java: java/lang/AbstractMethodError
+  Stalingrad.jar ... FAIL: Timeout (5s)
+  Star Wars Battle Above Coruscant - Luchoxlavida.jar ... OK
+  Startrek.jar ... OK
+  STAR_E.JAR ... OK
+  Star_Invasion.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Star_Marine.jar ... OK
+  Star_Wars_Jedi_Tricks.jar ... OK
+  Star_Wars_The_Force_Unleashed.jar ... OK
+  Stealth.jar ... FAIL: Timeout (5s)
+  SterlingLake.jar ... OK (missing: 0 classes, 1 methods)
+  SteveDavisSnooker.jar ... OK
+  StrategyWar.jar ... FAIL: Java: java/lang/AbstractMethodError
+  StreetSoccer.jar ... FAIL: Index was outside the bounds of the array.
+  StreetSoccer2.jar ... FAIL: Unable to read beyond the end of the stream.
+  Street_FighterII.jar ... FAIL: Destination array was not long enough. Check the destination index, length, and the array's lower bounds. (Parameter 'destinationArray')
+  street_foot.jar ... FAIL: End of Central Directory record could not be found.
+  Street_Racing_Simulator_100_(eng-rus).jar ... OK
+  Street_Soccer2.jar ... FAIL: Unable to read beyond the end of the stream.
+  Street_Soccer_2_1022.jar ... FAIL: Timeout (5s)
+  Stripmaze.jar ... OK (missing: 0 classes, 5 methods)
+  StripTableDance.jar ... FAIL: Nullable object must have a value.
+  Strip_club_manager.jar ... FAIL: Java: java/lang/AbstractMethodError
+  StrongestMen.jar ... FAIL: Timeout (5s)
+  Stuntman.jar ... OK (missing: 0 classes, 2 methods)
+  Stuntman_Ignition_(raro).jar ... OK
+  SU47.jar ... OK (missing: 0 classes, 3 methods)
+  SubmarineFB_sek700[1].ic.cz.jar ... OK
+  Sudoku.jar ... FAIL: Timeout (5s)
+  sudoku0706.jar ... OK (missing: 0 classes, 3 methods)
+  SudokuMaster_K750i.jar ... FAIL: Timeout (5s)
+  Sumea_Ski_Jump.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Summergames.jar ... OK (missing: 0 classes, 1 methods)
+  Super Mario.jar ... OK (missing: 0 classes, 1 methods)
+  Super-Bomberman.jar ... OK
+  Superbike_World_Championship2007.jar ... FAIL: startIndex ('-1') must be a non-negative value. (Parameter 'startIndex')
+Actual value was -1.
+  SuperBomberman.jar ... OK
+  SuperBomberman_101.jar ... OK (missing: 0 classes, 1 methods)
+  Superman Returns(french 128x160).jar ... OK
+  SupermanvsBatman.jar ... OK
+  Supermario t610.jar ... OK
+  SuperMario.jar ... OK
+  Supermario_Bross_Deluxe.jar ... FAIL: Timeout (5s)
+  supermonkeyball128.jar ... OK
+  SuperYumYum.jar ... OK (missing: 0 classes, 2 methods)
+  Super_Action_Hero.jar ... FAIL: Timeout (5s)
+  Super_Angry_Mario.jar ... FAIL: Timeout (5s)
+  Super_KO_Boxing.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Super_KO_Boxing2.jar ... OK (missing: 0 classes, 1 methods)
+  super_mario_all_stars_320x24_wkd.jar ... OK (missing: 0 classes, 1 methods)
+  Super_Mario_Bros_3_in_1.jar ... FAIL: Timeout (5s)
+  Super_Mario_The_Lost_Levels.jar ... OK
+  Super_Monkey _Ball_Tip_N_Tilt2.jar ... FAIL: Timeout (5s)
+  Super_Monkey_Ball_Tip_n_Tilt.jar ... OK (missing: 0 classes, 2 methods)
+  Super_Water_Bomber.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Super_Yum_Yum2.jar ... OK (missing: 0 classes, 3 methods)
+  Supreme_air_fight.jar ... FAIL: Timeout (5s)
+  Survivor.jar ... OK (missing: 0 classes, 3 methods)
+  Sven004.jar ... OK
+  Swarm.jar ... OK (missing: 0 classes, 1 methods)
+  SWATForce.jar ... OK
+  TableDance.jar ... FAIL: Nullable object must have a value.
+  Table_Football.jar ... OK
+  TAdventure Time - Heroes of Ooo 240x320.jar ... OK (missing: 0 classes, 2 methods)
+  TagHeuerF1Challenge.jar ... OK (missing: 0 classes, 2 methods)
+  Tangram_Super_Shapes.jar ... OK
+  TankM.jar ... FAIL: Timeout (5s)
+  Tankzors.jar ... OK (missing: 0 classes, 4 methods)
+  TAssassin's Creed La Hermandad 240x320.jar ... OK (missing: 0 classes, 1 methods)
+  TAvatar 640x360.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  TBen 10 Alien Force 240x320.jar ... OK (missing: 0 classes, 2 methods)
+  TBen 10 Ataque Total 240x320.jar ... OK (missing: 0 classes, 2 methods)
+  TBen 10 Omniverse 240x320.jar ... OK (missing: 0 classes, 2 methods)
+  TBen 10 Power of The Omnitrix 240x320.jar ... FAIL: Timeout (5s)
+  TBlades and Magic 240x320.jar ... OK
+  TCars Carrera de campeones 240x320.jar ... OK
+  TCastlevania Dawn Of Sorrow 240x320.jar ... OK
+  TCrystal Defender 240x320.jar ... FAIL: Timeout (5s)
+  TDE-Swamp_Of_Doom-Text_Adventure_101.jar ... OK
+  TDeep 3D Submarine Odyssey 240x320.jar ... OK
+  TDiamRush240x320.jar ... OK
+  TeamMcLarenMercedes.jar ... OK
+  Tekken_mobile.jar ... OK
+  TenchuK700.jar ... FAIL: Timeout (5s)
+  Tennis.jar ... OK
+  Terminator_Revenge.jar ... OK
+  Terminator_salvation.jar ... OK
+  Tetris mania- EA.jar ... FAIL: Java: java/lang/AbstractMethodError
+  Tetris-2.1.3.jar ... OK
+  Tetris.jar ... OK
+  Tetris_revolution.jar ... OK (missing: 0 classes, 1 methods)
+  Tetris_s40.jar ... OK
+  TexasHoldem.jar ... OK (missing: 0 classes, 1 methods)
+  TFifa14 240x320.jar ... FAIL: Java: java/lang/AbstractMethodError
+  TFifa14 Mundial Brasil 240x320 .jar ... OK
+  TFifa16 240x320.jar ... FAIL: Timeout (5s)
+  TFifa2010 Mundial Sud├ífrica .jar ... OK
+  TGangstarRioCityOfSaints 240x320.jar ... OK
+  TGenerator Rex 240x320.jar ... OK (missing: 0 classes, 2 methods)
+  THalloween Zombie Massacre 240x320 Touch.jar ... FAIL: Java: java/lang/AbstractMethodError
+  THalloween Zombie Massacre 240x320.jar ... FAIL: Java: java/lang/AbstractMethodError
+  The Sims 2 Mobile.jar ... OK (missing: 0 classes, 1 methods)
+  TheCrow.jar ... OK
+  THellboyMobile 240x320.jar ... FAIL: Timeout (5s)
+  The_Adventures_of_Tintin_SonyEricsson_W910i_EN_IGP_EU_102.jar ... FAIL: Timeout (5s)
+  The_Birds_Evil.jar ... OK
+  The_Club.jar ... FAIL: Timeout (5s)
+  The_Crow.jar ... OK
+  The_Fast_and_The_Furious.jar ... FAIL: Java: java/lang/AbstractMethodError
+  The_Fast_and_the_Furious2.jar ... OK (missing: 0 classes, 2 methods)
+  The_Fourth_Seal.jar ... FAIL: Java: java/lang/AbstractMethodError
+  the_hulk.jar ... OK (missing: 0 classes, 2 methods)
+  The_Invisible_Lady.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  The_Legend_of_Zorro.jar ... FAIL: Timeout (5s)
+  The_Simpsons.jar ... OK
+  The_Simpson_arcade.jar ... OK (missing: 0 classes, 12 methods)
+  The_Sims_3_Ambitions.jar ... OK
+  The_Sims_3_world_adventures.jar ... OK
+  The_Sims_Medieval.jar ... OK
+  the_witcher_128x160.jar ... FAIL: Nullable object must have a value.
+  The_X-Factor.jar ... FAIL: Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection. (Parameter 'count')
+  Thief_Deadly_Shadows.jar ... OK (missing: 0 classes, 1 methods)
+  Thor.jar ... OK
+  thq_pamplonabullrun_en_SonyEricsson_HazelJ20i_v1_0_KE970.jar ... OK (missing: 0 classes, 2 methods)
+  Thunderbird.jar ... OK
+  Thursday_the_12th.jar ... OK
+  Tibia.jar ... FAIL: Java: java/io/IOException
+  TIce age2 240x320.jar ... OK (missing: 0 classes, 1 methods)
+  TIce age3 240x320.jar ... OK
+  TIce Age4 Esp 240x320.jar ... OK
+  TIceAgeScratVentures 240x320.jar ... FAIL: Timeout (5s)
+  TIceAgeVillage 240x320.jar ... OK (missing: 0 classes, 1 methods)
+  Tic_tac_toe3D.jar ... OK
+  TimelineBattlesh.jar ... OK
+  TIron Man 240x320.jar ... FAIL: Timeout (5s)
+  TIron Man3 240x320.jar ... OK
+  TJurasicPark 240x320.jar ... OK
+  TKung Fu Panda 240x320.jar ... FAIL: Timeout (5s)
+  TLego Batman 240x320.jar ... FAIL: Timeout (5s)
+  TMegamind 240x320.jar ... FAIL: Timeout (5s)
+  TMiami Nights2 240x320.jar ... OK
+  TMNT_the_Ninja_Tribunal.jar ... OK
+  TMonsters University 240x320.jar ... OK
+  TMr Bean Mini Racer 240x320.jar ... OK
+  TMr Bean Racer 2 240x320.jar ... OK (missing: 0 classes, 1 methods)
+  TNeed For Speed Carbon 240x320.jar ... OK
+  TNew York Nights2 240x320.jar ... OK
+  TNightAtTheMuseum 2 240x320.jar ... OK
+  TNOVA 240x320.jar ... OK
+  TNOVA3 240x320.jar ... OK
+  TNOVALegacy 240x320.jar ... FAIL: Timeout (5s)
+  TokyoWar.jar ... FAIL: Timeout (5s)
+  TomAndJerry.jar ... OK (missing: 0 classes, 3 methods)
+  TomandJerryCheeseChase.jar ... OK (missing: 0 classes, 2 methods)
+  tombraider.jar ... OK
+  Tom_&_Jerry_Pinball_Pursuit.jar ... OK (missing: 0 classes, 2 methods)
+  TonyHawkUnderground.jar ... OK
+  tony_hawk_american_wasteland.jar ... FAIL: Timeout (5s)
+  Tony_Hawk_VERT.jar ... OK
+  Topolon.jar ... FAIL: Timeout (5s)
+  Top_gear.jar ... FAIL: Index and count must refer to a location within the buffer. (Parameter 'bytes')
+  Tornado_Mania3D.jar ... OK
+  tornado_mania_sfx.jar ... FAIL: Timeout (5s)
+  TotallySpies.jar ... FAIL: Timeout (5s)
+  TotalOverdose.jar ... FAIL: Timeout (5s)
+  Total_Overdose.jar ... OK (missing: 0 classes, 3 methods)
+  Totomi.jar ... OK
+  Tower Bloxx N6270.jar ... FAIL: Timeout (5s)
+  Tower_Bloxx.jar ... FAIL: Unable to read beyond the end of the stream.
+  Tower_Bloxx_New_York.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  Townsmen 5.jar ... FAIL: Timeout (5s)
+  Townsmen 6.jar ... FAIL: Timeout (5s)
+  Townsmen2Gold.jar ... FAIL: Timeout (5s)
+  Townsmen3.jar ... FAIL: Timeout (5s)
+  Toy_Story3-Woody's_Wild_Ride.jar ... OK
+  toy_story_3_woodys_wild_ride_320.jar ... OK
+  TPaid To Kill 240x320.jar ... OK
+  TPes 2016Esp 240x320.jar ... FAIL: Timeout (5s)
+  TPes2008Esp 240x320.jar ... FAIL: Timeout (5s)
+  TPes2010Esp 240x320.jar ... FAIL: Timeout (5s)
+  TPes2011Esp 240x320.jar ... FAIL: Timeout (5s)
+  TPhineas&Ferb Robo King 240x320.jar ... OK
+  TPhineas&Ferb robotKing 240x320 touch.jar ... OK
+  TPredator 176x220 (1).jar ... OK (missing: 0 classes, 1 methods)
+  TRally3DNo240x320.jar ... OK
+  Transformers.jar ... OK (missing: 0 classes, 3 methods)
+  Transformers2-Revenge_of_The_Fallen.jar ... FAIL: Timeout (5s)
+  Transformers_awakening.jar ... OK
+  Treasure_Island.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  TRise Of Lost Empires 240x320.jar ... OK (missing: 0 classes, 3 methods)
+  TronCycle.jar ... FAIL: Timeout (5s)
+  Tron_legacy.jar ... FAIL: Timeout (5s)
+  True_Crime2_New_York_City.jar ... FAIL: Java: java/io/IOException
+  TShrek 2 176x220.jar ... FAIL: Timeout (5s)
+  TShrek 2 Jump 'N' Run Game A 128x160.jar ... FAIL: Timeout (5s)
+  TShrek 2 Jump 'N' Run Game B 128x160.jar ... OK
+  TShrek 2 Las aventuras del Gato con Botas 176x220.jar ... OK (missing: 0 classes, 4 methods)
+  TShrek Party 240x320.jar ... FAIL: Timeout (5s)
+  TShrek the Third 240x320.jar ... FAIL: Arithmetic operation resulted in an overflow.
+  TShrek2 Adventure 176x220.jar ... FAIL: Timeout (5s)
+  TSim City Deluxe 240x320.jar ... FAIL: Timeout (5s)
+  TSimpson CA 240x320.jar ... OK
+  TSims 2esp 240x320.jar ... OK
+  TSims2 naufragos 240x320.jar ... FAIL: Timeout (5s)
+  TSolid Weapon 240x320.jar ... 
