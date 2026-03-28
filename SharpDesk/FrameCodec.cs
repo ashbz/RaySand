@@ -6,6 +6,7 @@ namespace SharpDesk;
 static class FrameCodec
 {
     public const int TileSize = 64;
+    public const int DirtyThreshold = 3;
 
     // ── Keyframe (full) ──
 
@@ -16,7 +17,6 @@ static class FrameCodec
         => LZ4Codec.Decode(src, off, len, dst, 0, dst.Length);
 
     // ── Tile-based delta (frame type 2) ──
-    // Wire: [cols:1][rows:1][bitmask:N][lz4(dirty tile XOR data)]
 
     public static int CompressTiles(byte[] cur, byte[] prev, byte[] delta, byte[] scratch, byte[] output, int width, int height)
     {
@@ -40,7 +40,7 @@ static class FrameCodec
                 int tw = Math.Min(TileSize, width - x0);
                 int th = Math.Min(TileSize, height - y0);
 
-                if (!IsTileDirty(delta, width, x0, y0, tw, th)) continue;
+                if (!IsTileDirtyPerceptual(cur, prev, width, x0, y0, tw, th, DirtyThreshold)) continue;
 
                 dirtyCount++;
                 int idx = ty * cols + tx;
@@ -48,8 +48,12 @@ static class FrameCodec
 
                 for (int y = y0; y < y0 + th; y++)
                 {
-                    Buffer.BlockCopy(delta, (y * width + x0) * 4, scratch, sOff, tw * 4);
-                    sOff += tw * 4;
+                    int rowOff = (y * width + x0) * 4;
+                    int rowLen = tw * 4;
+                    Buffer.BlockCopy(delta, rowOff, scratch, sOff, rowLen);
+                    sOff += rowLen;
+                    // Sync prev for this tile so it matches what the viewer will have
+                    Buffer.BlockCopy(cur, rowOff, prev, rowOff, rowLen);
                 }
             }
 
@@ -146,18 +150,26 @@ static class FrameCodec
             dst[dstOff + i] = (byte)(a[aOff + i] ^ b[bOff + i]);
     }
 
-    static bool IsTileDirty(byte[] delta, int width, int x0, int y0, int tw, int th)
+    /// <summary>Perceptual dirty check: tile is dirty if any channel differs by more than threshold.</summary>
+    static bool IsTileDirtyPerceptual(byte[] cur, byte[] prev, int width, int x0, int y0, int tw, int th, int threshold)
     {
+        var threshVec = new Vector<byte>((byte)threshold);
         int vecLen = Vector<byte>.Count;
+
         for (int y = y0; y < y0 + th; y++)
         {
             int rowStart = (y * width + x0) * 4;
             int rowEnd = rowStart + tw * 4;
             int i = rowStart;
             for (; i + vecLen <= rowEnd; i += vecLen)
-                if (new Vector<byte>(delta, i) != Vector<byte>.Zero) return true;
+            {
+                var a = new Vector<byte>(cur, i);
+                var b = new Vector<byte>(prev, i);
+                var diff = Vector.Max(a, b) - Vector.Min(a, b);
+                if (Vector.GreaterThanAny(diff, threshVec)) return true;
+            }
             for (; i < rowEnd; i++)
-                if (delta[i] != 0) return true;
+                if (Math.Abs((int)cur[i] - prev[i]) > threshold) return true;
         }
         return false;
     }

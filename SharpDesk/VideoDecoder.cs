@@ -1,5 +1,4 @@
 using FFmpeg.AutoGen.Abstractions;
-using FFmpeg.AutoGen.Bindings.DynamicallyLoaded;
 
 namespace SharpDesk;
 
@@ -11,25 +10,30 @@ sealed unsafe class VideoDecoder : IDisposable
     SwsContext* _sws;
     readonly int _w, _h;
 
-    public VideoDecoder(int w, int h)
+    public VideoDecoder(int w, int h, byte frameType)
     {
         _w = w; _h = h;
         VideoEncoder.EnsureFFmpegInit();
-        var codec = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
-        if (codec == null) throw new Exception("H.264 decoder not found");
+
+        var codecId = frameType switch
+        {
+            5 => AVCodecID.AV_CODEC_ID_AV1,
+            4 => AVCodecID.AV_CODEC_ID_HEVC,
+            _ => AVCodecID.AV_CODEC_ID_H264,
+        };
+        var codec = ffmpeg.avcodec_find_decoder(codecId);
+        if (codec == null) throw new Exception($"Decoder for frame type {frameType} not found");
 
         _ctx = ffmpeg.avcodec_alloc_context3(codec);
         _ctx->width = w;
         _ctx->height = h;
-
         if (ffmpeg.avcodec_open2(_ctx, codec, null) < 0)
-            throw new Exception("Failed to open H.264 decoder");
+            throw new Exception($"Failed to open decoder for frame type {frameType}");
 
         _frame = ffmpeg.av_frame_alloc();
         _pkt = ffmpeg.av_packet_alloc();
     }
 
-    /// <summary>Decode H.264 packet into RGBA output buffer. Returns true on success.</summary>
     public bool Decode(byte[] data, byte[] rgbaOut)
     {
         fixed (byte* pData = data)

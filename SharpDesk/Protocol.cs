@@ -1,14 +1,17 @@
 using System.Buffers.Binary;
+using System.Text;
 
 namespace SharpDesk;
 
-enum MsgType : byte { Handshake = 1, Frame, MouseMove, MouseButton, KeyEvent, MouseWheel, Audio, AudioMute, FpsLimit }
+enum MsgType : byte
+{
+    Handshake = 1, Frame, MouseMove, MouseButton, KeyEvent, MouseWheel,
+    Audio, AudioMute, FpsLimit, CursorPos, Clipboard, UdpPort
+}
 
 static class Protocol
 {
     const int MaxPayload = 50_000_000;
-
-    // ── Wire I/O ──
 
     public static async Task WriteMessage(Stream s, MsgType type, byte[] payload, CancellationToken ct = default)
     {
@@ -55,28 +58,32 @@ static class Protocol
         return true;
     }
 
-    // ── Encode / Decode ──
+    // ── Handshake (13 bytes) ──
 
-    public static byte[] EncodeHandshake(int w, int h, int sampleRate = 0, int channels = 0, int bitsPerSample = 0)
+    public static byte[] EncodeHandshake(int w, int h, int sampleRate = 0, int channels = 0, int bitsPerSample = 0, bool opus = false)
     {
-        var b = new byte[12];
+        var b = new byte[13];
         BinaryPrimitives.WriteUInt16LittleEndian(b, (ushort)w);
         BinaryPrimitives.WriteUInt16LittleEndian(b.AsSpan(2), (ushort)h);
         BinaryPrimitives.WriteInt32LittleEndian(b.AsSpan(4), sampleRate);
         BinaryPrimitives.WriteUInt16LittleEndian(b.AsSpan(8), (ushort)channels);
         BinaryPrimitives.WriteUInt16LittleEndian(b.AsSpan(10), (ushort)bitsPerSample);
+        b[12] = (byte)(opus ? 1 : 0);
         return b;
     }
 
-    public static (int w, int h, int sampleRate, int channels, int bitsPerSample) DecodeHandshake(byte[] p)
+    public static (int w, int h, int sampleRate, int channels, int bitsPerSample, bool opus) DecodeHandshake(byte[] p)
     {
-        int w  = BinaryPrimitives.ReadUInt16LittleEndian(p);
-        int h  = BinaryPrimitives.ReadUInt16LittleEndian(p.AsSpan(2));
-        int sr = p.Length >= 8  ? BinaryPrimitives.ReadInt32LittleEndian(p.AsSpan(4))   : 0;
-        int ch = p.Length >= 10 ? BinaryPrimitives.ReadUInt16LittleEndian(p.AsSpan(8))  : 0;
-        int bp = p.Length >= 12 ? BinaryPrimitives.ReadUInt16LittleEndian(p.AsSpan(10)) : 0;
-        return (w, h, sr, ch, bp);
+        int w   = BinaryPrimitives.ReadUInt16LittleEndian(p);
+        int h   = BinaryPrimitives.ReadUInt16LittleEndian(p.AsSpan(2));
+        int sr  = p.Length >= 8  ? BinaryPrimitives.ReadInt32LittleEndian(p.AsSpan(4))  : 0;
+        int ch  = p.Length >= 10 ? BinaryPrimitives.ReadUInt16LittleEndian(p.AsSpan(8)) : 0;
+        int bp  = p.Length >= 12 ? BinaryPrimitives.ReadUInt16LittleEndian(p.AsSpan(10)): 0;
+        bool op = p.Length >= 13 && p[12] != 0;
+        return (w, h, sr, ch, bp, op);
     }
+
+    // ── Mouse / Key ──
 
     public static byte[] EncodeMouseMove(float nx, float ny)
     {
@@ -108,4 +115,24 @@ static class Protocol
         return b;
     }
     public static int DecodeWheel(byte[] p) => BinaryPrimitives.ReadInt32LittleEndian(p);
+
+    // ── Cursor position ──
+
+    public static byte[] EncodeCursorPos(float nx, float ny) => EncodeMouseMove(nx, ny);
+    public static (float nx, float ny) DecodeCursorPos(byte[] p) => DecodeMouseMove(p);
+
+    // ── Clipboard ──
+
+    public static byte[] EncodeClipboard(string text) => Encoding.UTF8.GetBytes(text);
+    public static string DecodeClipboard(byte[] p) => Encoding.UTF8.GetString(p);
+
+    // ── UDP port ──
+
+    public static byte[] EncodeUdpPort(int port)
+    {
+        var b = new byte[4];
+        BinaryPrimitives.WriteInt32LittleEndian(b, port);
+        return b;
+    }
+    public static int DecodeUdpPort(byte[] p) => BinaryPrimitives.ReadInt32LittleEndian(p);
 }

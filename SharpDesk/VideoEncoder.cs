@@ -13,8 +13,15 @@ sealed unsafe class VideoEncoder : IDisposable
     long _pts;
 
     public string Name { get; }
+    public byte FrameType { get; }
 
-    static readonly string[] HwEncoders = ["h264_nvenc", "h264_amf", "h264_qsv"];
+    static readonly (string name, byte ft)[] CandidateEncoders =
+    [
+        ("h264_nvenc",  3), ("h264_amf",   3), ("h264_qsv",   3),
+        ("hevc_nvenc",  4), ("hevc_amf",   4), ("hevc_qsv",   4),
+        ("av1_nvenc",   5), ("av1_amf",    5), ("av1_qsv",    5),
+        ("libx264",     3), ("libx265",    4), ("libsvtav1",   5),
+    ];
 
     static bool _ffmpegInit;
 
@@ -40,20 +47,28 @@ sealed unsafe class VideoEncoder : IDisposable
     {
         encoder = null;
         try { EnsureFFmpegInit(); }
-        catch { log = "FFmpeg DLLs not found – using LZ4 (run get-ffmpeg.ps1 to enable H.264)"; return false; }
+        catch { log = "FFmpeg DLLs not found \u2013 using LZ4 (run get-ffmpeg.ps1 to enable video codecs)"; return false; }
 
-        foreach (var name in HwEncoders)
+        foreach (var (name, ft) in CandidateEncoders)
         {
-            try { encoder = new VideoEncoder(w, h, fps, name); log = $"H.264 encoder: {name} (hardware)"; return true; }
+            try
+            {
+                encoder = new VideoEncoder(w, h, fps, name, ft);
+                bool hw = !name.StartsWith("lib");
+                string family = ft == 5 ? "AV1" : ft == 4 ? "HEVC" : "H.264";
+                log = $"{family} encoder: {name} ({(hw ? "hardware" : "software")})";
+                return true;
+            }
             catch { }
         }
-        try { encoder = new VideoEncoder(w, h, fps, "libx264"); log = $"H.264 encoder: libx264 (software)"; return true; }
-        catch (Exception ex) { log = $"H.264 unavailable ({ex.Message}) – using LZ4"; return false; }
+        log = "No video encoder available \u2013 using LZ4";
+        return false;
     }
 
-    VideoEncoder(int w, int h, int fps, string codecName)
+    VideoEncoder(int w, int h, int fps, string codecName, byte frameType)
     {
         _w = w; _h = h;
+        FrameType = frameType;
         var codec = ffmpeg.avcodec_find_encoder_by_name(codecName);
         if (codec == null) throw new Exception($"{codecName} not found");
         Name = codecName;
@@ -72,6 +87,17 @@ sealed unsafe class VideoEncoder : IDisposable
         {
             ffmpeg.av_opt_set(_ctx->priv_data, "preset", "ultrafast", 0);
             ffmpeg.av_opt_set(_ctx->priv_data, "tune", "zerolatency", 0);
+            _ctx->bit_rate = 4_000_000;
+        }
+        else if (codecName == "libx265")
+        {
+            ffmpeg.av_opt_set(_ctx->priv_data, "preset", "ultrafast", 0);
+            ffmpeg.av_opt_set(_ctx->priv_data, "tune", "zerolatency", 0);
+            _ctx->bit_rate = 4_000_000;
+        }
+        else if (codecName == "libsvtav1")
+        {
+            ffmpeg.av_opt_set(_ctx->priv_data, "preset", "12", 0);
             _ctx->bit_rate = 4_000_000;
         }
         else if (codecName.Contains("nvenc"))
@@ -109,7 +135,6 @@ sealed unsafe class VideoEncoder : IDisposable
         if (_sws == null) throw new Exception("sws_getContext failed");
     }
 
-    /// <summary>Encode one BGRA frame. Returns H.264 packet bytes, or null if encoder is buffering.</summary>
     public byte[]? Encode(byte[] bgra)
     {
         ffmpeg.av_frame_make_writable(_frame);
@@ -124,7 +149,6 @@ sealed unsafe class VideoEncoder : IDisposable
         }
 
         _frame->pts = _pts++;
-
         if (ffmpeg.avcodec_send_frame(_ctx, _frame) < 0) return null;
         if (ffmpeg.avcodec_receive_packet(_ctx, _pkt) != 0) return null;
 
